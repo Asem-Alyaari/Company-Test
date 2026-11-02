@@ -273,3 +273,129 @@
     margin: 0 0 1.25rem 0;
   }
 }
+
+/* ==========================================================================
+   Request Create / Edit Dialog Styles
+   ========================================================================== */
+:host ::ng-deep .request-dialog {
+  .p-dialog-content {
+    padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .status-notice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1.25rem;
+    border: 1px solid transparent;
+
+    .notice-icon {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    &.notice-draft {
+      background-color: #f1f5f9;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    &.notice-submitted {
+      background-color: #f0f9ff;
+      color: #0369a1;
+      border-color: #bae6fd;
+    }
+
+    &.notice-approved {
+      background-color: #f0fdf4;
+      color: #15803d;
+      border-color: #bbf7d0;
+    }
+
+    &.notice-rejected {
+      background-color: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    &.notice-delivered {
+      background-color: #ecfdf5;
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+  }
+
+  .request-dialog-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .field-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+
+      &.span-2 {
+        @media (min-width: 640px) {
+          grid-column: span 2;
+        }
+      }
+
+      .field-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--p-text-color, #1e293b);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        text-align: start;
+
+        .required-star {
+          color: var(--p-red-500, #ef4444);
+        }
+
+        .optional-hint {
+          font-weight: normal;
+          font-size: 0.775rem;
+          color: var(--p-text-muted-color, #64748b);
+        }
+      }
+
+      .field-help {
+        font-size: 0.75rem;
+        color: var(--p-text-muted-color, #64748b);
+      }
+
+      .char-count {
+        font-size: 0.75rem;
+        color: var(--p-text-muted-color, #94a3b8);
+        text-align: end;
+        margin-top: 0.15rem;
+      }
+    }
+  }
+
+  .dialog-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--p-content-border-color, #e2e8f0);
+    flex-wrap: wrap;
+  }
+}

@@ -10,7 +10,8 @@ export const EQUIPMENT_REQUESTS_ROUTES: Routes = [
   },
   {
     path: 'new',
-    component: RequestFormComponent
+    component: RequestListComponent,
+    data: { openCreate: true }
   },
   {
     path: ':id',

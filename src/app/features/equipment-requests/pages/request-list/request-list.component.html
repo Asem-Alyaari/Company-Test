@@ -19,7 +19,7 @@
       <p-button
         [label]="'requests.createButton' | translate"
         icon="pi pi-plus"
-        routerLink="/equipment-requests/new"
+        (onClick)="openCreateDialog()"
       />
     </div>
   </header>
@@ -215,7 +215,7 @@
                     [text]="true"
                     severity="info"
                     size="small"
-                    [routerLink]="['/equipment-requests', request.id, 'edit']"
+                    (onClick)="openEditDialog(request, $event)"
                     ariaLabel="Edit Request"
                   />
                 }
@@ -251,3 +251,266 @@
     </div>
   }
 </div>
+
+<!-- Create / Edit Equipment Request Dialog -->
+<p-dialog
+  [visible]="isDialogVisible()"
+  [modal]="true"
+  [header]="dialogTitle()"
+  [closable]="!isSaving()"
+  [style]="{ width: '720px', maxWidth: '95vw' }"
+  (visibleChange)="closeDialog()"
+  styleClass="request-dialog"
+>
+  @if (statusNotice()) {
+    <div class="status-notice" [class]="'notice-' + currentStatus().toLowerCase()">
+      <i class="pi pi-info-circle notice-icon" aria-hidden="true"></i>
+      <span>{{ statusNotice() }}</span>
+    </div>
+  }
+
+  <form [formGroup]="requestForm" class="request-dialog-form" novalidate>
+    <div class="form-grid">
+      <!-- Request Number -->
+      <div class="field-col">
+        <label for="dialog-requestNumber" class="field-label">
+          {{ 'form.requestNumber' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <input
+          pInputText
+          id="dialog-requestNumber"
+          type="text"
+          formControlName="requestNumber"
+          placeholder="EQ-1006"
+          class="w-full font-mono"
+        />
+        <small class="field-help">{{ 'form.requestNumberHelp' | translate }}</small>
+        <app-form-error
+          [control]="requestForm.controls.requestNumber"
+          [fieldName]="'form.requestNumber' | translate"
+        />
+      </div>
+
+      <!-- Employee Name -->
+      <div class="field-col">
+        <label for="dialog-employeeName" class="field-label">
+          {{ 'form.employeeName' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <input
+          pInputText
+          id="dialog-employeeName"
+          type="text"
+          formControlName="employeeName"
+          class="w-full"
+        />
+        <app-form-error
+          [control]="requestForm.controls.employeeName"
+          [fieldName]="'form.employeeName' | translate"
+        />
+      </div>
+
+      <!-- Department -->
+      <div class="field-col">
+        <label for="dialog-departmentId" class="field-label">
+          {{ 'form.department' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <p-select
+          id="dialog-departmentId"
+          formControlName="departmentId"
+          [options]="dialogDepartmentOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          [placeholder]="'form.selectDepartment' | translate"
+          styleClass="w-full"
+        />
+        <app-form-error
+          [control]="requestForm.controls.departmentId"
+          [fieldName]="'form.department' | translate"
+        />
+      </div>
+
+      <!-- Equipment Item -->
+      <div class="field-col">
+        <label for="dialog-item" class="field-label">
+          {{ 'form.item' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <p-select
+          id="dialog-item"
+          formControlName="item"
+          [options]="itemOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'form.selectItem' | translate"
+          styleClass="w-full"
+        />
+        <app-form-error
+          [control]="requestForm.controls.item"
+          [fieldName]="'form.item' | translate"
+        />
+      </div>
+
+      <!-- Quantity -->
+      <div class="field-col">
+        <label for="dialog-quantity" class="field-label">
+          {{ 'form.quantity' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <input
+          pInputText
+          id="dialog-quantity"
+          type="number"
+          min="1"
+          max="10"
+          step="1"
+          formControlName="quantity"
+          class="w-full font-mono"
+        />
+        <app-form-error
+          [control]="requestForm.controls.quantity"
+          [fieldName]="'form.quantity' | translate"
+        />
+      </div>
+
+      <!-- Estimated Cost -->
+      <div class="field-col">
+        <label for="dialog-estimatedCost" class="field-label">
+          {{ 'form.estimatedCost' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <input
+          pInputText
+          id="dialog-estimatedCost"
+          type="number"
+          step="0.01"
+          min="0.01"
+          formControlName="estimatedCost"
+          class="w-full font-mono"
+          dir="ltr"
+        />
+        <app-form-error
+          [control]="requestForm.controls.estimatedCost"
+          [fieldName]="'form.estimatedCost' | translate"
+        />
+      </div>
+
+      <!-- Needed On Date -->
+      <div class="field-col">
+        <label for="dialog-neededOn" class="field-label">
+          {{ 'form.neededOn' | translate }}
+          <span class="required-star">*</span>
+        </label>
+        <input
+          pInputText
+          id="dialog-neededOn"
+          type="date"
+          [min]="minDateString"
+          formControlName="neededOn"
+          class="w-full font-mono"
+        />
+        <app-form-error
+          [control]="requestForm.controls.neededOn"
+          [fieldName]="'form.neededOn' | translate"
+        />
+      </div>
+
+      <!-- Reason (Full width) -->
+      <div class="field-col span-2">
+        <label for="dialog-reason" class="field-label">
+          {{ 'form.reason' | translate }}
+          <span class="optional-hint">({{ 'form.reasonPlaceholder' | translate }})</span>
+        </label>
+        <textarea
+          pTextarea
+          id="dialog-reason"
+          formControlName="reason"
+          rows="3"
+          maxlength="250"
+          [placeholder]="'form.reasonPlaceholder' | translate"
+          class="w-full"
+        ></textarea>
+        <div class="char-count">
+          {{ requestForm.controls.reason.value.length || 0 }}/250
+        </div>
+        <app-form-error
+          [control]="requestForm.controls.reason"
+          [fieldName]="'form.reason' | translate"
+        />
+      </div>
+    </div>
+
+    <!-- Dialog Actions Footer -->
+    <div class="dialog-actions-bar">
+      <p-button
+        type="button"
+        [label]="'form.cancel' | translate"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+        [disabled]="isSaving()"
+      />
+
+      <!-- Create / Draft Actions -->
+      @if (!editingRequest() || currentStatus() === 'Draft') {
+        <p-button
+          type="button"
+          [label]="'form.saveDraft' | translate"
+          icon="pi pi-save"
+          severity="secondary"
+          (onClick)="onSave('Draft')"
+          [loading]="isSaving() && targetSavingStatus() === 'Draft'"
+          [disabled]="isSaving() || isReadOnly()"
+        />
+
+        <p-button
+          type="button"
+          [label]="'form.submitRequest' | translate"
+          icon="pi pi-send"
+          (onClick)="onSave('Submitted')"
+          [loading]="isSaving() && targetSavingStatus() === 'Submitted'"
+          [disabled]="isSaving() || isReadOnly()"
+        />
+      }
+
+      <!-- Submitted Mode Action -->
+      @else if (currentStatus() === 'Submitted') {
+        <p-button
+          type="button"
+          [label]="'form.submitRequest' | translate"
+          icon="pi pi-check"
+          (onClick)="onSave('Submitted')"
+          [loading]="isSaving() && targetSavingStatus() === 'Submitted'"
+          [disabled]="isSaving() || isReadOnly()"
+        />
+      }
+
+      <!-- Approved Mode Actions -->
+      @else if (currentStatus() === 'Approved') {
+        <p-button
+          type="button"
+          [label]="'form.saveDraft' | translate"
+          icon="pi pi-save"
+          severity="secondary"
+          (onClick)="onSave('Approved')"
+          [loading]="isSaving() && targetSavingStatus() === 'Approved'"
+          [disabled]="isSaving() || isReadOnly()"
+        />
+
+        <p-button
+          type="button"
+          [label]="'form.markAsDelivered' | translate"
+          icon="pi pi-box"
+          severity="success"
+          (onClick)="onSave('Delivered')"
+          [loading]="isSaving() && targetSavingStatus() === 'Delivered'"
+          [disabled]="isSaving() || isReadOnly()"
+        />
+      }
+    </div>
+  </form>
+</p-dialog>

@@ -116,7 +116,13 @@ describe('RequestListComponent - Pagination & Features', () => {
   const mockRequestService = {
     getAll: () => of(mockRequests),
     formatCost: (cost: number) => Number(cost).toFixed(2),
-    delete: () => of(void 0)
+    delete: () => of(void 0),
+    generateNextRequestNumber: () => of('EQ-1007'),
+    isRequestNumberUnique: () => of(true),
+    create: (payload: Omit<EquipmentRequest, 'id' | 'createdAt'>) =>
+      of({ id: '99', ...payload, createdAt: '2026-11-02T12:00:00Z' } as EquipmentRequest),
+    update: (id: string, payload: Partial<EquipmentRequest>) =>
+      of({ id, ...payload } as EquipmentRequest)
   };
 
   beforeEach(async () => {
@@ -183,5 +189,31 @@ describe('RequestListComponent - Pagination & Features', () => {
 
     languageService.setLanguage('ar');
     expect(component.pageReportTemplate()).toContain('عرض من {first} إلى {last} من أصل {totalRecords} طلب');
+  });
+
+  it('should open create dialog and prefill next request number', () => {
+    expect(component.isDialogVisible()).toBe(false);
+    component.openCreateDialog();
+    expect(component.isDialogVisible()).toBe(true);
+    expect(component.editingRequest()).toBeNull();
+    expect(component.requestForm.controls.requestNumber.value).toBe('EQ-1007');
+    expect(component.requestForm.controls.departmentId.value).toBe('payroll');
+  });
+
+  it('should open edit dialog and prefill existing request data', () => {
+    const target = mockRequests[0];
+    component.openEditDialog(target);
+    expect(component.isDialogVisible()).toBe(true);
+    expect(component.editingRequest()?.id).toBe(target.id);
+    expect(component.requestForm.controls.requestNumber.value).toBe(target.requestNumber);
+    expect(component.requestForm.controls.employeeName.value).toBe(target.employeeName);
+  });
+
+  it('should close dialog and reset state on closeDialog', () => {
+    component.openCreateDialog();
+    expect(component.isDialogVisible()).toBe(true);
+    component.closeDialog();
+    expect(component.isDialogVisible()).toBe(false);
+    expect(component.editingRequest()).toBeNull();
   });
 });
