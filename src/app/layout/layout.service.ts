@@ -4,7 +4,7 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root'
 })
 export class LayoutService {
-  private readonly sidebarVisible = signal<boolean>(true);
+  private readonly sidebarVisible = signal<boolean>(false);
 
   readonly isSidebarVisible = this.sidebarVisible.asReadonly();
 

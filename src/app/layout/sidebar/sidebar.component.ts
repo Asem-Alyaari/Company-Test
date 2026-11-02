@@ -29,7 +29,7 @@ export class SidebarComponent {
   private readonly router = inject(Router);
 
   get isOpen(): boolean {
-    return this.layoutService.isSidebarVisible();
+    return this.authService.isAuthenticated() && this.layoutService.isSidebarVisible();
   }
 
   set isOpen(value: boolean) {

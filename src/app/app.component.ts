@@ -31,6 +31,7 @@ export class AppComponent {
   }
 
   logout(): void {
+    this.layoutService.closeSidebar();
     this.authService.logout();
   }
 }

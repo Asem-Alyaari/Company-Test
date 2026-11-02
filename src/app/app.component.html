@@ -1,22 +1,27 @@
 <p-toast position="top-right" />
 <p-confirmDialog />
-<app-sidebar />
+
+@if (authService.isAuthenticated()) {
+  <app-sidebar />
+}
 
 <div class="app-layout">
   <!-- Top App Navigation hosting Language Switcher & Auth Links -->
   <header class="app-topbar">
     <div class="topbar-inner">
       <div class="topbar-start">
-        <p-button
-          icon="pi pi-bars"
-          [rounded]="true"
-          [text]="true"
-          size="small"
-          (onClick)="layoutService.toggleSidebar()"
-          [title]="'nav.toggleSidebar' | translate"
-          [ariaLabel]="'nav.toggleSidebar' | translate"
-          styleClass="sidebar-toggle-btn"
-        />
+        @if (authService.isAuthenticated()) {
+          <p-button
+            icon="pi pi-bars"
+            [rounded]="true"
+            [text]="true"
+            size="small"
+            (onClick)="layoutService.toggleSidebar()"
+            [title]="'nav.toggleSidebar' | translate"
+            [ariaLabel]="'nav.toggleSidebar' | translate"
+            styleClass="sidebar-toggle-btn"
+          />
+        }
 
         <a routerLink="/equipment-requests" class="app-brand" title="Home">
           <i class="pi pi-box brand-icon" aria-hidden="true"></i>

@@ -12,6 +12,7 @@ describe('SidebarComponent', () => {
   let component: SidebarComponent;
   let layoutService: LayoutService;
   let languageService: LanguageService;
+  let authService: AuthService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,21 +33,26 @@ describe('SidebarComponent', () => {
     component = fixture.componentInstance;
     layoutService = TestBed.inject(LayoutService);
     languageService = TestBed.inject(LanguageService);
+    authService = TestBed.inject(AuthService);
     fixture.detectChanges();
   });
 
-  it('should create the sidebar component', () => {
+  it('should create the sidebar component and be closed by default', () => {
     expect(component).toBeTruthy();
+    expect(component.isOpen).toBe(false);
   });
 
-  it('should be visible by default and toggle with layoutService', () => {
+  it('should only be openable when authenticated', () => {
+    // Unauthenticated state: opening layoutService still leaves isOpen false
+    layoutService.openSidebar();
+    expect(component.isOpen).toBe(false);
+
+    // Authenticated state: opening layoutService makes isOpen true
+    vi.spyOn(authService, 'isAuthenticated').mockReturnValue(true);
     expect(component.isOpen).toBe(true);
 
     layoutService.closeSidebar();
     expect(component.isOpen).toBe(false);
-
-    layoutService.openSidebar();
-    expect(component.isOpen).toBe(true);
   });
 
   it('should set drawer position to right for Arabic and left for English', () => {
