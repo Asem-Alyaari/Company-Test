@@ -14,6 +14,7 @@ export * from './auth/token.service';
 export * from './services/api.service';
 export * from './services/loading.service';
 export * from './services/notification.service';
+export * from './services/theme.service';
 
 // Interceptors
 export * from './interceptors/auth.interceptor';

@@ -30,6 +30,19 @@
       </div>
 
       <div class="topbar-actions">
+        <!-- Theme Switcher Button -->
+        <p-button
+          [icon]="themeService.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          size="small"
+          (onClick)="toggleTheme()"
+          [title]="(themeService.isDarkMode() ? 'app.lightMode' : 'app.darkMode') | translate"
+          [ariaLabel]="(themeService.isDarkMode() ? 'app.lightMode' : 'app.darkMode') | translate"
+          styleClass="theme-switch-btn"
+        />
+
         <!-- Language Switcher Button -->
         <p-button
           [label]="'app.switchLanguage' | translate"

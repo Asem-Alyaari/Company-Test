@@ -1,7 +1,9 @@
 {
   "app": {
     "title": "بوابة طلبات المعدات والأجهزة",
-    "switchLanguage": "English"
+    "switchLanguage": "English",
+    "darkMode": "الوضع الليلي",
+    "lightMode": "الوضع النهاري"
   },
   "requests": {
     "title": "طلبات المعدات",

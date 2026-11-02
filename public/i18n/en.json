@@ -1,7 +1,9 @@
 {
   "app": {
     "title": "Equipment Requests Portal",
-    "switchLanguage": "العربية"
+    "switchLanguage": "العربية",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
   },
   "requests": {
     "title": "Equipment Requests",

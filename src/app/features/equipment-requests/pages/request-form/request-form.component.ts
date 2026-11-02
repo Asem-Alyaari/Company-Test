@@ -32,7 +32,7 @@ import {
   EquipmentStatus
 } from '../../models/equipment-request.model';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
-import { DepartmentService } from '../../services/department.service';
+import { DepartmentService } from '../../../departments/services/department.service';
 import { EmployeeService } from '../../../employees/services/employee.service';
 
 function getTodayString(): string {

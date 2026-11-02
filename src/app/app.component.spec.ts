@@ -24,4 +24,14 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  it('should toggle theme when toggleTheme is called', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const initialMode = app['themeService'].isDarkMode();
+    app.toggleTheme();
+    expect(app['themeService'].isDarkMode()).toBe(!initialMode);
+  });
 });

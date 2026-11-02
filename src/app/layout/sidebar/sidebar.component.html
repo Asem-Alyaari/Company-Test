@@ -59,6 +59,14 @@
 
   <ng-template #footer>
     <div class="sidebar-footer">
+      <p-button
+        [label]="(themeService.isDarkMode() ? 'app.lightMode' : 'app.darkMode') | translate"
+        [icon]="themeService.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+        severity="secondary"
+        [text]="true"
+        (onClick)="themeService.toggleTheme()"
+        styleClass="w-full mb-2 theme-toggle-btn"
+      />
       @if (authService.isAuthenticated()) {
         <p-button
           [label]="'auth.logout' | translate"

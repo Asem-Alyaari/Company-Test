@@ -1,2 +1,22 @@
 /* Global Styles */
 @import "primeicons/primeicons.css";
+
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &.app-dark {
+    color-scheme: dark;
+  }
+
+  &:not(.app-dark) {
+    color-scheme: light;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--p-surface-ground, #f8fafc);
+  color: var(--p-text-color, #1e293b);
+  min-height: 100vh;
+}

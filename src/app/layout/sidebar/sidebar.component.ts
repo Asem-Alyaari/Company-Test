@@ -4,7 +4,7 @@ import { Drawer } from 'primeng/drawer';
 import { Button } from 'primeng/button';
 import { Avatar } from 'primeng/avatar';
 import { Divider } from 'primeng/divider';
-import { AuthService, LanguageService, TranslatePipe } from '@core';
+import { AuthService, LanguageService, ThemeService, TranslatePipe } from '@core';
 import { LayoutService } from '../layout.service';
 
 export interface NavItem {
@@ -26,6 +26,7 @@ export class SidebarComponent {
   protected readonly layoutService = inject(LayoutService);
   protected readonly authService = inject(AuthService);
   protected readonly languageService = inject(LanguageService);
+  protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
   get isOpen(): boolean {

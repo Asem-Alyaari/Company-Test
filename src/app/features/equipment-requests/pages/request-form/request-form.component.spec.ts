@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { RequestFormComponent } from './request-form.component';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
-import { DepartmentService } from '../../services/department.service';
+import { DepartmentService } from '../../../departments/services/department.service';
 import { EmployeeService } from '../../../employees/services/employee.service';
 import { EquipmentRequest } from '../../models/equipment-request.model';
 

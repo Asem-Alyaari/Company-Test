@@ -18,7 +18,7 @@ import {
   EquipmentStatus
 } from '../../models/equipment-request.model';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
-import { DepartmentService } from '../../services/department.service';
+import { DepartmentService } from '../../../departments/services/department.service';
 import { EmployeeService } from '../../../employees/services/employee.service';
 import { RequestFormComponent } from '../request-form/request-form.component';
 
