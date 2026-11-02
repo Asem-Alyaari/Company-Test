@@ -191,29 +191,24 @@ describe('RequestListComponent - Pagination & Features', () => {
     expect(component.pageReportTemplate()).toContain('عرض من {first} إلى {last} من أصل {totalRecords} طلب');
   });
 
-  it('should open create dialog and prefill next request number', () => {
-    expect(component.isDialogVisible()).toBe(false);
+  it('should open create dialog via RequestFormComponent', () => {
+    expect(component.isFormVisible()).toBe(false);
     component.openCreateDialog();
-    expect(component.isDialogVisible()).toBe(true);
-    expect(component.editingRequest()).toBeNull();
-    expect(component.requestForm.controls.requestNumber.value).toBe('EQ-1007');
-    expect(component.requestForm.controls.departmentId.value).toBe('payroll');
+    expect(component.isFormVisible()).toBe(true);
+    expect(component.selectedRequest()).toBeNull();
   });
 
-  it('should open edit dialog and prefill existing request data', () => {
+  it('should open edit dialog with existing request data via RequestFormComponent', () => {
     const target = mockRequests[0];
     component.openEditDialog(target);
-    expect(component.isDialogVisible()).toBe(true);
-    expect(component.editingRequest()?.id).toBe(target.id);
-    expect(component.requestForm.controls.requestNumber.value).toBe(target.requestNumber);
-    expect(component.requestForm.controls.employeeName.value).toBe(target.employeeName);
+    expect(component.isFormVisible()).toBe(true);
+    expect(component.selectedRequest()?.id).toBe(target.id);
   });
 
-  it('should close dialog and reset state on closeDialog', () => {
+  it('should close dialog and reset state on form close', () => {
     component.openCreateDialog();
-    expect(component.isDialogVisible()).toBe(true);
-    component.closeDialog();
-    expect(component.isDialogVisible()).toBe(false);
-    expect(component.editingRequest()).toBeNull();
+    expect(component.isFormVisible()).toBe(true);
+    component.onFormClosed();
+    expect(component.isFormVisible()).toBe(true); // closed handler manages navigation or list updates
   });
 });

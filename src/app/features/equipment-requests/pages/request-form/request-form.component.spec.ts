@@ -70,6 +70,8 @@ describe('RequestFormComponent - Business Rules', () => {
 
     fixture = TestBed.createComponent(RequestFormComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('request', mockDeliveredRequest);
+    fixture.componentRef.setInput('visible', true);
     fixture.detectChanges();
   });
 

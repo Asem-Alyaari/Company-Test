@@ -1,19 +1,31 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin, of, switchMap } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+  signal
+} from '@angular/core';
+import {
+  AbstractControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators
+} from '@angular/forms';
+import { forkJoin, of } from 'rxjs';
+import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { Select } from 'primeng/select';
 import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
-import { Tag } from 'primeng/tag';
 import { ConfirmationService } from 'primeng/api';
 import { LanguageService, NotificationService, TranslatePipe } from '@core';
-import { FormErrorComponent, LoaderComponent } from '@shared';
+import { FormErrorComponent } from '@shared';
 import {
-  Department,
   EQUIPMENT_ITEMS,
   EquipmentItem,
   EquipmentRequest,
@@ -76,46 +88,72 @@ function quantityValidator(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-request-form',
   imports: [
-    RouterModule,
     ReactiveFormsModule,
+    Dialog,
     InputText,
     Textarea,
     Select,
     Button,
-    Card,
-    Tag,
     TranslatePipe,
-    FormErrorComponent,
-    LoaderComponent
+    FormErrorComponent
   ],
   templateUrl: './request-form.component.html',
   styleUrl: './request-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RequestFormComponent implements OnInit {
+export class RequestFormComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   protected readonly requestService = inject(EquipmentRequestService);
   protected readonly departmentService = inject(DepartmentService);
   protected readonly languageService = inject(LanguageService);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-  private readonly destroyRef = inject(DestroyRef);
 
-  readonly requestId = signal<string | null>(null);
+  // Model & Inputs
+  readonly visible = model<boolean>(false);
+  readonly request = input<EquipmentRequest | null>(null);
+
+  // Outputs
+  readonly saved = output<EquipmentRequest>();
+  readonly cancelled = output<void>();
+
+  // Internal Component State
+  readonly editingId = signal<string | null>(null);
   readonly currentStatus = signal<EquipmentStatus>('Draft');
   readonly isSaving = signal<boolean>(false);
-  readonly isLoading = signal<boolean>(false);
-  readonly loadError = signal<string | null>(null);
+  readonly targetStatus = signal<EquipmentStatus>('Draft');
+  readonly minDateString = getTodayString();
 
-  readonly isAddMode = computed(() => !this.requestId());
+  readonly isAddMode = computed(() => !this.editingId());
   readonly isReadOnly = computed(() => {
     const status = this.currentStatus();
     return status === 'Rejected' || status === 'Delivered';
   });
 
-  readonly minDateString = getTodayString();
+  readonly dialogTitle = computed(() => {
+    const isEdit = !this.isAddMode();
+    const reqNum = this.requestForm.controls.requestNumber.value;
+    return isEdit
+      ? this.languageService.translate('form.editTitle', { number: reqNum })
+      : this.languageService.translate('form.createTitle');
+  });
+
+  readonly statusNotice = computed(() => {
+    const status = this.currentStatus();
+    switch (status) {
+      case 'Draft':
+        return this.languageService.translate('form.statusNoticeDraft');
+      case 'Submitted':
+        return this.languageService.translate('form.statusNoticeSubmitted');
+      case 'Approved':
+        return this.languageService.translate('form.statusNoticeApproved');
+      case 'Rejected':
+      case 'Delivered':
+        return this.languageService.translate('form.statusNoticeReadOnly', { status });
+      default:
+        return '';
+    }
+  });
 
   readonly itemOptions = computed(() =>
     EQUIPMENT_ITEMS.map((item) => ({
@@ -126,16 +164,13 @@ export class RequestFormComponent implements OnInit {
 
   readonly departmentOptions = computed(() =>
     this.departmentService.departments().map((d) => ({
-      label: d.name,
+      label: `${d.name} (${d.code})`,
       value: d.id
     }))
   );
 
   readonly requestForm = this.fb.group({
-    requestNumber: [
-      '',
-      [Validators.required, Validators.pattern(/^EQ-\d+$/)]
-    ],
+    requestNumber: ['', [Validators.required, Validators.pattern(/^EQ-\d+$/)]],
     employeeName: ['', [Validators.required, Validators.minLength(2)]],
     departmentId: ['', [Validators.required]],
     item: ['Laptop' as EquipmentItem, [Validators.required]],
@@ -145,73 +180,100 @@ export class RequestFormComponent implements OnInit {
     reason: ['', [Validators.maxLength(250)]]
   });
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    this.requestId.set(id);
+  constructor() {
+    effect(
+      () => {
+        const isVisible = this.visible();
+        const req = this.request();
 
-    this.isLoading.set(true);
-    this.departmentService
-      .loadDepartments()
-      .pipe(
-        switchMap(() => {
-          if (id) {
-            return this.requestService.getById(id);
+        if (isVisible) {
+          if (req) {
+            this.initEdit(req);
           } else {
-            return this.requestService.generateNextRequestNumber().pipe(
-              switchMap((suggestedNumber) => of({ suggestedNumber }))
-            );
+            this.initCreate();
           }
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe({
-        next: (result) => {
-          this.isLoading.set(false);
-          if ('suggestedNumber' in result) {
-            // Create mode: auto-suggest EQ- plus highest existing number + 1
-            this.requestForm.patchValue({
-              requestNumber: result.suggestedNumber
-            });
-            this.currentStatus.set('Draft');
-            this.applyFieldPermissions('Draft');
-          } else {
-            // Edit mode
-            const req = result as EquipmentRequest;
-            this.currentStatus.set(req.status);
-            this.requestForm.patchValue({
-              requestNumber: req.requestNumber,
-              employeeName: req.employeeName,
-              departmentId: req.departmentId,
-              item: req.item,
-              quantity: req.quantity,
-              estimatedCost: req.estimatedCost,
-              neededOn: req.neededOn,
-              reason: req.reason ?? ''
-            });
-            this.applyFieldPermissions(req.status);
-          }
-        },
-        error: (err: unknown) => {
-          this.isLoading.set(false);
-          const msg = err instanceof Error ? err.message : 'Error loading request data';
-          this.loadError.set(msg);
+        } else {
+          this.resetInternalState();
         }
-      });
+      },
+      { allowSignalWrites: true }
+    );
+  }
+
+  private initCreate(): void {
+    this.editingId.set(null);
+    this.currentStatus.set('Draft');
+
+    forkJoin({
+      suggestedNumber: this.requestService.generateNextRequestNumber(),
+      departments:
+        this.departmentService.departments().length > 0
+          ? of(this.departmentService.departments())
+          : this.departmentService.loadDepartments()
+    }).subscribe({
+      next: (res) => {
+        const firstDeptId = res.departments[0]?.id ?? '';
+        this.requestForm.reset({
+          requestNumber: res.suggestedNumber,
+          employeeName: '',
+          departmentId: firstDeptId,
+          item: 'Laptop',
+          quantity: 1,
+          estimatedCost: 0,
+          neededOn: getTodayString(),
+          reason: ''
+        });
+        this.applyFieldPermissions('Draft');
+      },
+      error: () => {
+        const firstDeptId = this.departmentService.departments()[0]?.id ?? '';
+        this.requestForm.reset({
+          requestNumber: 'EQ-1001',
+          employeeName: '',
+          departmentId: firstDeptId,
+          item: 'Laptop',
+          quantity: 1,
+          estimatedCost: 0,
+          neededOn: getTodayString(),
+          reason: ''
+        });
+        this.applyFieldPermissions('Draft');
+      }
+    });
+  }
+
+  private initEdit(req: EquipmentRequest): void {
+    this.editingId.set(req.id);
+    this.currentStatus.set(req.status);
+
+    this.requestForm.reset({
+      requestNumber: req.requestNumber,
+      employeeName: req.employeeName,
+      departmentId: req.departmentId,
+      item: req.item,
+      quantity: req.quantity,
+      estimatedCost: req.estimatedCost,
+      neededOn: req.neededOn,
+      reason: req.reason ?? ''
+    });
+    this.applyFieldPermissions(req.status);
+  }
+
+  private resetInternalState(): void {
+    this.isSaving.set(false);
+    this.editingId.set(null);
+    this.requestForm.reset();
   }
 
   private applyFieldPermissions(status: EquipmentStatus): void {
     const controls = this.requestForm.controls;
-
-    // Reset all controls to enabled first
     Object.values(controls).forEach((ctrl) => ctrl.enable());
 
     switch (status) {
       case 'Draft':
-        // All fields enabled
         break;
 
       case 'Submitted':
-        // Only reason, neededOn (date), and quantity can change
         controls.requestNumber.disable();
         controls.employeeName.disable();
         controls.departmentId.disable();
@@ -220,7 +282,6 @@ export class RequestFormComponent implements OnInit {
         break;
 
       case 'Approved':
-        // Only neededOn (date) can change
         controls.requestNumber.disable();
         controls.employeeName.disable();
         controls.departmentId.disable();
@@ -232,9 +293,24 @@ export class RequestFormComponent implements OnInit {
 
       case 'Rejected':
       case 'Delivered':
-        // Strictly read-only
         Object.values(controls).forEach((ctrl) => ctrl.disable());
         break;
+    }
+  }
+
+  onCancel(): void {
+    if (this.isSaving()) {
+      return;
+    }
+    this.visible.set(false);
+    this.cancelled.emit();
+  }
+
+  onVisibleChange(value: boolean): void {
+    if (!value) {
+      this.onCancel();
+    } else {
+      this.visible.set(true);
     }
   }
 
@@ -246,11 +322,87 @@ export class RequestFormComponent implements OnInit {
     this.processSave('Submitted');
   }
 
-  markAsDelivered(): void {
-    const id = this.requestId();
-    const reqNumber = this.requestForm.getRawValue().requestNumber;
-    if (!id) return;
+  processSave(targetStatus: EquipmentStatus): void {
+    if (this.isSaving()) {
+      return;
+    }
 
+    if (this.requestForm.invalid) {
+      this.requestForm.markAllAsTouched();
+      return;
+    }
+
+    const raw = this.requestForm.getRawValue();
+    this.isSaving.set(true);
+    this.targetStatus.set(targetStatus);
+
+    const editId = this.editingId();
+
+    this.requestService.isRequestNumberUnique(raw.requestNumber, editId ?? undefined).subscribe({
+      next: (isUnique) => {
+        if (!isUnique) {
+          this.isSaving.set(false);
+          this.requestForm.controls.requestNumber.setErrors({
+            requestNumberUnique: true
+          });
+          this.requestForm.controls.requestNumber.markAsTouched();
+          return;
+        }
+
+        const payload: Omit<EquipmentRequest, 'id' | 'createdAt'> = {
+          requestNumber: raw.requestNumber.trim(),
+          employeeName: raw.employeeName.trim(),
+          departmentId: raw.departmentId,
+          item: raw.item,
+          quantity: Number(raw.quantity),
+          estimatedCost: Number(raw.estimatedCost),
+          neededOn: raw.neededOn,
+          reason: raw.reason.trim(),
+          status: targetStatus
+        };
+
+        const save$ = editId
+          ? this.requestService.update(editId, payload)
+          : this.requestService.create(payload);
+
+        save$.subscribe({
+          next: (saved) => {
+            this.isSaving.set(false);
+            const messageKey =
+              targetStatus === 'Submitted'
+                ? 'messages.submittedSuccess'
+                : targetStatus === 'Delivered'
+                  ? 'messages.deliveredSuccess'
+                  : 'messages.savedSuccess';
+            this.notificationService.success(
+              this.languageService.translate(messageKey)
+            );
+            this.visible.set(false);
+            this.saved.emit(saved);
+          },
+          error: () => {
+            this.isSaving.set(false);
+            this.notificationService.error(
+              'Save Failed',
+              'An error occurred while saving the request. The form remains open for corrections.'
+            );
+          }
+        });
+      },
+      error: () => {
+        this.isSaving.set(false);
+        this.notificationService.error('Error', 'Unable to validate request number uniqueness.');
+      }
+    });
+  }
+
+  markAsDelivered(): void {
+    const editId = this.editingId();
+    if (!editId) {
+      return;
+    }
+
+    const reqNumber = this.requestForm.controls.requestNumber.value;
     this.confirmationService.confirm({
       header: this.languageService.translate('dialog.deliverTitle'),
       message: this.languageService.translate('dialog.deliverMessage', {
@@ -266,98 +418,8 @@ export class RequestFormComponent implements OnInit {
         severity: 'secondary'
       },
       accept: () => {
-        this.isSaving.set(true);
-        this.requestService.update(id, { status: 'Delivered' }).subscribe({
-          next: () => {
-            this.isSaving.set(false);
-            this.notificationService.success(
-              this.languageService.translate('messages.deliveredSuccess')
-            );
-            void this.router.navigate(['/equipment-requests', id]);
-          },
-          error: () => {
-            this.isSaving.set(false);
-            this.notificationService.error(
-              'Error',
-              'Failed to mark as delivered. Please try again.'
-            );
-          }
-        });
+        this.processSave('Delivered');
       }
     });
-  }
-
-  processSave(targetStatus: EquipmentStatus): void {
-    if (this.isSaving()) {
-      return; // Block double save while request in flight
-    }
-
-    if (this.requestForm.invalid) {
-      this.requestForm.markAllAsTouched();
-      return;
-    }
-
-    const raw = this.requestForm.getRawValue();
-
-    this.isSaving.set(true);
-
-    // Check request number uniqueness first
-    this.requestService
-      .isRequestNumberUnique(raw.requestNumber, this.requestId() ?? undefined)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (isUnique) => {
-          if (!isUnique) {
-            this.isSaving.set(false);
-            this.requestForm.controls.requestNumber.setErrors({
-              requestNumberUnique: true
-            });
-            this.requestForm.controls.requestNumber.markAsTouched();
-            return;
-          }
-
-          const payload: Omit<EquipmentRequest, 'id' | 'createdAt'> = {
-            requestNumber: raw.requestNumber.trim(),
-            employeeName: raw.employeeName.trim(),
-            departmentId: raw.departmentId,
-            item: raw.item,
-            quantity: Number(raw.quantity),
-            estimatedCost: Number(raw.estimatedCost),
-            neededOn: raw.neededOn,
-            reason: raw.reason.trim(),
-            status: targetStatus
-          };
-
-          const save$ = this.isAddMode()
-            ? this.requestService.create(payload)
-            : this.requestService.update(this.requestId()!, payload);
-
-          save$.subscribe({
-            next: (saved) => {
-              this.isSaving.set(false);
-              const messageKey =
-                targetStatus === 'Submitted'
-                  ? 'messages.submittedSuccess'
-                  : 'messages.savedSuccess';
-              this.notificationService.success(
-                this.languageService.translate(messageKey)
-              );
-              void this.router.navigate(['/equipment-requests', saved.id]);
-            },
-            error: () => {
-              // Rule: Do not close the form when save fails
-              this.isSaving.set(false);
-              this.notificationService.error(
-                'Save Failed',
-                'An error occurred while saving the request. The form remains open for corrections.'
-              );
-            }
-          });
-        },
-        error: () => {
-          this.isSaving.set(false);
-          this.notificationService.error('Error', 'Unable to validate request number uniqueness.');
-        }
-      });
   }
 }
