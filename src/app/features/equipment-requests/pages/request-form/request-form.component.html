@@ -37,21 +37,25 @@
         />
       </div>
 
-      <!-- Employee Name -->
+      <!-- Employee Select -->
       <div class="field-col">
-        <label for="form-employeeName" class="field-label">
+        <label for="form-employeeId" class="field-label">
           {{ 'form.employeeName' | translate }}
           <span class="required-star">*</span>
         </label>
-        <input
-          pInputText
-          id="form-employeeName"
-          type="text"
-          formControlName="employeeName"
-          class="w-full"
+        <p-select
+          id="form-employeeId"
+          formControlName="employeeId"
+          [options]="employeeOptions()"
+          optionLabel="label"
+          optionValue="value"
+          [filter]="true"
+          [placeholder]="'form.selectEmployee' | translate"
+          (onChange)="onEmployeeSelect($event.value)"
+          styleClass="w-full"
         />
         <app-form-error
-          [control]="requestForm.controls.employeeName"
+          [control]="requestForm.controls.employeeId"
           [fieldName]="'form.employeeName' | translate"
         />
       </div>

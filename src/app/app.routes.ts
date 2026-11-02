@@ -32,6 +32,15 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'employees',
+    canActivate: [authGuard],
+    canMatch: [authMatchGuard],
+    loadChildren: () =>
+      import('./features/employees/employees.routes').then(
+        (m) => m.EMPLOYEES_ROUTES
+      )
+  },
+  {
     path: '**',
     redirectTo: 'equipment-requests'
   }

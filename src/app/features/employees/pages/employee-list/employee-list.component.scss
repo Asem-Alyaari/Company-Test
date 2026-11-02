@@ -1,0 +1,223 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .header-titles {
+    .page-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--p-text-color, #0f172a);
+      margin: 0 0 0.25rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+      font-size: 0.95rem;
+      color: var(--p-text-muted-color, #64748b);
+      margin: 0;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+.toolbar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--p-content-background, #ffffff);
+  border: 1px solid var(--p-content-border-color, #e2e8f0);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    max-width: 450px;
+
+    .search-icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      inset-inline-start: 0.85rem;
+      color: var(--p-text-muted-color, #94a3b8);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding-inline-start: 2.5rem;
+    }
+  }
+
+  .filter-box {
+    min-width: 200px;
+
+    :host ::ng-deep .dept-filter-select {
+      width: 100%;
+    }
+  }
+}
+
+.results-meta {
+  display: flex;
+  align-items: center;
+
+  .count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--p-text-muted-color, #475569);
+    background-color: var(--p-surface-100, #f1f5f9);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+  }
+}
+
+.table-card {
+  background-color: var(--p-content-background, #ffffff);
+  border: 1px solid var(--p-content-border-color, #e2e8f0);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  .table-row {
+    transition: background-color 0.15s ease-in-out;
+
+    &:hover {
+      background-color: var(--p-surface-50, #f8fafc);
+    }
+  }
+
+  .emp-name-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .emp-avatar-icon {
+      font-size: 0.95rem;
+      color: var(--p-primary-color, #2563eb);
+      background-color: var(--p-primary-50, #eff6ff);
+      padding: 0.4rem;
+      border-radius: 50%;
+    }
+  }
+
+  .email-link {
+    color: var(--p-primary-600, #2563eb);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .job-tag {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    background-color: var(--p-surface-100, #f1f5f9);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--p-text-color, #334155);
+  }
+
+  .dept-pill {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #15803d;
+  }
+
+  .row-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.state-container {
+  padding: 3rem 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+:host ::ng-deep .emp-dialog {
+  .p-dialog-content {
+    padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .emp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+
+      .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--p-text-color, #1e293b);
+
+        .required {
+          color: var(--p-red-500, #ef4444);
+        }
+      }
+
+      .field-hint {
+        font-size: 0.75rem;
+        color: var(--p-text-muted-color, #64748b);
+      }
+    }
+
+    .dialog-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--p-content-border-color, #e2e8f0);
+    }
+  }
+}

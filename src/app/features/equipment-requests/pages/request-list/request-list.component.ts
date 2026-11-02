@@ -19,6 +19,7 @@ import {
 } from '../../models/equipment-request.model';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
 import { DepartmentService } from '../../services/department.service';
+import { EmployeeService } from '../../../employees/services/employee.service';
 import { RequestFormComponent } from '../request-form/request-form.component';
 
 interface DropdownOption<T> {
@@ -48,6 +49,7 @@ interface DropdownOption<T> {
 export class RequestListComponent implements OnInit {
   protected readonly requestService = inject(EquipmentRequestService);
   protected readonly departmentService = inject(DepartmentService);
+  protected readonly employeeService = inject(EmployeeService);
   protected readonly languageService = inject(LanguageService);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
@@ -98,9 +100,11 @@ export class RequestListComponent implements OnInit {
     const statusFilter = this.selectedStatus();
 
     return all.filter((req) => {
+      const empName = this.getEmployeeDisplayName(req).toLowerCase();
       const matchesSearch =
         !query ||
         req.requestNumber.toLowerCase().includes(query) ||
+        empName.includes(query) ||
         req.employeeName.toLowerCase().includes(query) ||
         req.item.toLowerCase().includes(query);
 
@@ -158,6 +162,7 @@ export class RequestListComponent implements OnInit {
 
     forkJoin({
       departments: this.departmentService.loadDepartments(),
+      employees: this.employeeService.loadEmployees(),
       requests: this.requestService.getAll()
     }).subscribe({
       next: (res) => {
@@ -170,6 +175,16 @@ export class RequestListComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  getEmployeeDisplayName(request: EquipmentRequest): string {
+    if (request.employeeId) {
+      const name = this.employeeService.getEmployeeName(request.employeeId);
+      if (name && name !== '-') {
+        return name;
+      }
+    }
+    return request.employeeName || '-';
   }
 
   onSearchCommit(event: Event): void {
@@ -297,13 +312,14 @@ export class RequestListComponent implements OnInit {
 
     for (const row of visibleRows) {
       const deptName = this.departmentService.getDepartmentName(row.departmentId);
+      const empName = this.getEmployeeDisplayName(row);
       const itemTranslated = this.languageService.translate(`items.${row.item}`);
       const statusTranslated = this.languageService.translate(`statuses.${row.status}`);
       const formattedCost = Number(row.estimatedCost).toFixed(2);
 
       const values = [
         row.requestNumber,
-        row.employeeName,
+        empName,
         deptName,
         itemTranslated,
         String(row.quantity),

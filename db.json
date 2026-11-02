@@ -28,29 +28,77 @@
       "id": "4",
       "code": "IT",
       "name": "IT"
+    },
+    {
+      "code": "SD",
+      "name": "sds",
+      "id": "j2_mKinCCJs"
+    },
+    {
+      "code": "SDSS",
+      "name": "fsss",
+      "id": "hgN7uPusT9c"
+    }
+  ],
+  "employees": [
+    {
+      "id": "1",
+      "name": "Sara Ali",
+      "email": "sara.ali@company.com",
+      "departmentId": "1",
+      "jobTitle": "Payroll Specialist",
+      "phone": "+966 50 123 4567"
+    },
+    {
+      "id": "2",
+      "name": "Omar Nasser",
+      "email": "omar.nasser@company.com",
+      "departmentId": "2",
+      "jobTitle": "HR Coordinator",
+      "phone": "+966 50 234 5678"
+    },
+    {
+      "id": "3",
+      "name": "Lina Hassan",
+      "email": "lina.hassan@company.com",
+      "departmentId": "3",
+      "jobTitle": "Financial Analyst",
+      "phone": "+966 50 345 6789"
+    },
+    {
+      "id": "4",
+      "name": "Huda Saleh",
+      "email": "huda.saleh@company.com",
+      "departmentId": "4",
+      "jobTitle": "DevOps Engineer",
+      "phone": "+966 50 456 7890"
+    },
+    {
+      "id": "5",
+      "name": "Mazen Omar",
+      "email": "mazen.omar@company.com",
+      "departmentId": "1",
+      "jobTitle": "Accountant",
+      "phone": "+966 50 567 8901"
+    },
+    {
+      "id": "6",
+      "name": "علي قاسم",
+      "email": "ali.qasim@company.com",
+      "departmentId": "1",
+      "jobTitle": "Senior Auditor",
+      "phone": "+966 50 678 9012"
     }
   ],
   "equipmentRequests": [
     {
-      "id": "1",
-      "requestNumber": "EQ-1001",
-      "employeeName": "Sara Ali",
-      "departmentId": "1",
-      "item": "Laptop",
-      "quantity": 1,
-      "estimatedCost": 2500.5,
-      "neededOn": "2026-11-15",
-      "status": "Draft",
-      "reason": "Replacement for a damaged device",
-      "createdAt": "2026-11-01T08:00:00Z"
-    },
-    {
       "id": "2",
       "requestNumber": "EQ-1002",
+      "employeeId": "2",
       "employeeName": "Omar Nasser",
       "departmentId": "2",
       "item": "Monitor",
-      "quantity": 2,
+      "quantity": 10,
       "estimatedCost": 800,
       "neededOn": "2026-11-20",
       "status": "Submitted",
@@ -60,19 +108,21 @@
     {
       "id": "3",
       "requestNumber": "EQ-1003",
+      "employeeId": "3",
       "employeeName": "Lina Hassan",
       "departmentId": "3",
       "item": "Mobile",
       "quantity": 1,
       "estimatedCost": 1500,
       "neededOn": "2026-12-01",
-      "status": "Approved",
+      "status": "Delivered",
       "reason": "",
       "createdAt": "2026-10-20T10:00:00Z"
     },
     {
       "id": "4",
       "requestNumber": "EQ-1004",
+      "employeeId": "4",
       "employeeName": "Huda Saleh",
       "departmentId": "4",
       "item": "Headset",
@@ -86,6 +136,7 @@
     {
       "id": "5",
       "requestNumber": "EQ-1005",
+      "employeeId": "5",
       "employeeName": "Mazen Omar",
       "departmentId": "1",
       "item": "Laptop",
@@ -95,6 +146,48 @@
       "status": "Delivered",
       "reason": "New joiner",
       "createdAt": "2026-10-15T07:45:00Z"
+    },
+    {
+      "requestNumber": "EQ-1006",
+      "employeeId": "4",
+      "employeeName": "qw",
+      "departmentId": "4",
+      "item": "Laptop",
+      "quantity": 1,
+      "estimatedCost": 5620000,
+      "neededOn": "2026-11-02",
+      "reason": "qw",
+      "status": "Submitted",
+      "createdAt": "2026-11-02T12:45:45.581Z",
+      "id": "27SYF72ZgMo"
+    },
+    {
+      "requestNumber": "EQ-1007",
+      "employeeId": "6",
+      "employeeName": "علي قاسم",
+      "departmentId": "1",
+      "item": "Monitor",
+      "quantity": 1,
+      "estimatedCost": 150000,
+      "neededOn": "2026-11-02",
+      "reason": "سي",
+      "status": "Submitted",
+      "createdAt": "2026-11-02T13:15:38.197Z",
+      "id": "SHQ4CxQZDhE"
+    },
+    {
+      "requestNumber": "EQ-1008",
+      "employeeId": "1",
+      "employeeName": "Sara Aliسس",
+      "departmentId": "1",
+      "item": "Laptop",
+      "quantity": 1,
+      "estimatedCost": 50000,
+      "neededOn": "2026-11-02",
+      "reason": "",
+      "status": "Submitted",
+      "createdAt": "2026-11-02T13:56:22.707Z",
+      "id": "m1F5G4dMTCA"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

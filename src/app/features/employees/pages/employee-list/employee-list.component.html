@@ -1,0 +1,292 @@
+<div class="page-container">
+  <!-- Header -->
+  <header class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">{{ 'employees.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'employees.subtitle' | translate }}</p>
+    </div>
+
+    <div class="header-actions">
+      <p-button
+        [label]="'employees.addButton' | translate"
+        icon="pi pi-plus"
+        (onClick)="openCreateDialog()"
+      />
+    </div>
+  </header>
+
+  <!-- Filter & Search Toolbar -->
+  <section class="toolbar-card">
+    <div class="search-box">
+      <i class="pi pi-search search-icon" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="text"
+        [value]="searchQuery()"
+        [placeholder]="'employees.searchPlaceholder' | translate"
+        (input)="onSearchChange($event)"
+        class="search-input"
+      />
+    </div>
+
+    <div class="filter-box">
+      <p-select
+        [options]="departmentFilterOptions()"
+        [ngModel]="selectedDepartment()"
+        (ngModelChange)="onDepartmentFilterChange($event)"
+        optionLabel="label"
+        optionValue="value"
+        [placeholder]="'employees.allDepartments' | translate"
+        styleClass="dept-filter-select"
+      />
+    </div>
+  </section>
+
+  <!-- Results Count -->
+  <div class="results-meta">
+    <span class="count-badge">
+      <i class="pi pi-users" aria-hidden="true"></i>
+      {{ 'employees.showingCount' | translate: { count: totalEmployeesCount() } }}
+    </span>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="state-container">
+      <app-loader />
+    </div>
+  }
+
+  <!-- Data Table -->
+  @else {
+    <div class="table-card">
+      <p-table
+        [value]="filteredEmployees()"
+        [responsiveLayout]="'scroll'"
+        styleClass="p-datatable-striped"
+        sortMode="multiple"
+        [paginator]="true"
+        [rows]="rowsPerPage()"
+        [first]="firstRowIndex()"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [alwaysShowPaginator]="true"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="name" class="col-name">
+              {{ 'employees.name' | translate }}
+              <p-sortIcon field="name" />
+            </th>
+            <th pSortableColumn="email" class="col-email">
+              {{ 'employees.email' | translate }}
+              <p-sortIcon field="email" />
+            </th>
+            <th class="col-job">{{ 'employees.jobTitle' | translate }}</th>
+            <th class="col-dept">{{ 'employees.department' | translate }}</th>
+            <th class="col-phone">{{ 'employees.phone' | translate }}</th>
+            <th class="col-actions">{{ 'columns.actions' | translate }}</th>
+          </tr>
+        </ng-template>
+
+        <ng-template #body let-employee>
+          <tr class="table-row">
+            <td class="col-name font-semibold">
+              <div class="emp-name-wrapper">
+                <i class="pi pi-user emp-avatar-icon" aria-hidden="true"></i>
+                <span>{{ employee.name }}</span>
+              </div>
+            </td>
+            <td class="col-email font-mono">
+              <a [href]="'mailto:' + employee.email" class="email-link">
+                {{ employee.email }}
+              </a>
+            </td>
+            <td class="col-job">
+              <span class="job-tag">{{ employee.jobTitle }}</span>
+            </td>
+            <td class="col-dept">
+              <span class="dept-pill">
+                {{ departmentService.getDepartmentName(employee.departmentId) }}
+              </span>
+            </td>
+            <td class="col-phone font-mono">
+              {{ employee.phone || '-' }}
+            </td>
+            <td class="col-actions">
+              <div class="row-actions">
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="info"
+                  size="small"
+                  (onClick)="openEditDialog(employee)"
+                  [title]="'employees.editButton' | translate"
+                  [ariaLabel]="'employees.editButton' | translate"
+                />
+
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  size="small"
+                  (onClick)="deleteEmployee(employee)"
+                  [title]="'employees.deleteButton' | translate"
+                  [ariaLabel]="'employees.deleteButton' | translate"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="6" class="p-0">
+              <app-empty-state
+                [title]="'employees.emptyTitle' | translate"
+                [message]="'employees.emptyMessage' | translate"
+                icon="pi pi-users"
+              />
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+</div>
+
+<!-- Employee Add / Edit Dialog -->
+<p-dialog
+  [visible]="isDialogVisible()"
+  [modal]="true"
+  [header]="dialogTitle()"
+  [closable]="!isSaving()"
+  [style]="{ width: '520px', maxWidth: '95vw' }"
+  (visibleChange)="closeDialog()"
+  styleClass="emp-dialog"
+>
+  <form [formGroup]="employeeForm" (ngSubmit)="onSave()" novalidate class="emp-form">
+    <!-- Name Field -->
+    <div class="form-field">
+      <label for="emp-name" class="form-label">
+        {{ 'employees.name' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="emp-name"
+        type="text"
+        formControlName="name"
+        [placeholder]="'employees.namePlaceholder' | translate"
+        class="w-full"
+        autocomplete="off"
+      />
+      <small class="field-hint">{{ 'employees.nameHelp' | translate }}</small>
+      <app-form-error
+        [control]="employeeForm.controls.name"
+        [fieldName]="'employees.name' | translate"
+      />
+    </div>
+
+    <!-- Email Field -->
+    <div class="form-field">
+      <label for="emp-email" class="form-label">
+        {{ 'employees.email' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="emp-email"
+        type="email"
+        formControlName="email"
+        [placeholder]="'employees.emailPlaceholder' | translate"
+        class="w-full font-mono"
+        autocomplete="off"
+        dir="ltr"
+      />
+      <small class="field-hint">{{ 'employees.emailHelp' | translate }}</small>
+      <app-form-error
+        [control]="employeeForm.controls.email"
+        [fieldName]="'employees.email' | translate"
+      />
+    </div>
+
+    <!-- Department Field -->
+    <div class="form-field">
+      <label for="emp-dept" class="form-label">
+        {{ 'employees.department' | translate }} <span class="required">*</span>
+      </label>
+      <p-select
+        id="emp-dept"
+        formControlName="departmentId"
+        [options]="departmentSelectOptions()"
+        optionLabel="label"
+        optionValue="value"
+        [filter]="true"
+        [placeholder]="'employees.selectDepartment' | translate"
+        styleClass="w-full"
+      />
+      <app-form-error
+        [control]="employeeForm.controls.departmentId"
+        [fieldName]="'employees.department' | translate"
+      />
+    </div>
+
+    <!-- Job Title Field -->
+    <div class="form-field">
+      <label for="emp-job" class="form-label">
+        {{ 'employees.jobTitle' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        pInputText
+        id="emp-job"
+        type="text"
+        formControlName="jobTitle"
+        [placeholder]="'employees.jobTitlePlaceholder' | translate"
+        class="w-full"
+        autocomplete="off"
+      />
+      <small class="field-hint">{{ 'employees.jobTitleHelp' | translate }}</small>
+      <app-form-error
+        [control]="employeeForm.controls.jobTitle"
+        [fieldName]="'employees.jobTitle' | translate"
+      />
+    </div>
+
+    <!-- Phone Field -->
+    <div class="form-field">
+      <label for="emp-phone" class="form-label">
+        {{ 'employees.phone' | translate }}
+      </label>
+      <input
+        pInputText
+        id="emp-phone"
+        type="tel"
+        formControlName="phone"
+        [placeholder]="'employees.phonePlaceholder' | translate"
+        class="w-full font-mono"
+        autocomplete="off"
+        dir="ltr"
+      />
+      <small class="field-hint">{{ 'employees.phoneHelp' | translate }}</small>
+    </div>
+
+    <div class="dialog-actions">
+      <p-button
+        type="button"
+        [label]="'employees.cancel' | translate"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="closeDialog()"
+        [disabled]="isSaving()"
+      />
+
+      <p-button
+        type="submit"
+        [label]="'employees.save' | translate"
+        icon="pi pi-check"
+        [loading]="isSaving()"
+      />
+    </div>
+  </form>
+</p-dialog>

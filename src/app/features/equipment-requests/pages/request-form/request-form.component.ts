@@ -33,6 +33,7 @@ import {
 } from '../../models/equipment-request.model';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
 import { DepartmentService } from '../../services/department.service';
+import { EmployeeService } from '../../../employees/services/employee.service';
 
 function getTodayString(): string {
   const d = new Date();
@@ -105,6 +106,7 @@ export class RequestFormComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   protected readonly requestService = inject(EquipmentRequestService);
   protected readonly departmentService = inject(DepartmentService);
+  protected readonly employeeService = inject(EmployeeService);
   protected readonly languageService = inject(LanguageService);
   private readonly notificationService = inject(NotificationService);
   private readonly confirmationService = inject(ConfirmationService);
@@ -169,8 +171,16 @@ export class RequestFormComponent {
     }))
   );
 
+  readonly employeeOptions = computed(() =>
+    this.employeeService.employees().map((e) => ({
+      label: `${e.name} (${e.jobTitle})`,
+      value: e.id
+    }))
+  );
+
   readonly requestForm = this.fb.group({
     requestNumber: ['', [Validators.required, Validators.pattern(/^EQ-\d+$/)]],
+    employeeId: ['', [Validators.required]],
     employeeName: ['', [Validators.required, Validators.minLength(2)]],
     departmentId: ['', [Validators.required]],
     item: ['Laptop' as EquipmentItem, [Validators.required]],
@@ -179,6 +189,17 @@ export class RequestFormComponent {
     neededOn: [getTodayString(), [Validators.required, neededOnValidator]],
     reason: ['', [Validators.maxLength(250)]]
   });
+
+  onEmployeeSelect(employeeId: string): void {
+    const emp = this.employeeService.getEmployeeById(employeeId);
+    if (emp) {
+      this.requestForm.patchValue({
+        employeeId: emp.id,
+        employeeName: emp.name,
+        departmentId: emp.departmentId
+      });
+    }
+  }
 
   constructor() {
     effect(
@@ -209,14 +230,23 @@ export class RequestFormComponent {
       departments:
         this.departmentService.departments().length > 0
           ? of(this.departmentService.departments())
-          : this.departmentService.loadDepartments()
+          : this.departmentService.loadDepartments(),
+      employees:
+        this.employeeService.employees().length > 0
+          ? of(this.employeeService.employees())
+          : this.employeeService.loadEmployees()
     }).subscribe({
       next: (res) => {
-        const firstDeptId = res.departments[0]?.id ?? '';
+        const firstEmp = res.employees[0];
+        const defaultEmpId = firstEmp?.id ?? '';
+        const defaultEmpName = firstEmp?.name ?? '';
+        const defaultDeptId = firstEmp?.departmentId ?? res.departments[0]?.id ?? '';
+
         this.requestForm.reset({
           requestNumber: res.suggestedNumber,
-          employeeName: '',
-          departmentId: firstDeptId,
+          employeeId: defaultEmpId,
+          employeeName: defaultEmpName,
+          departmentId: defaultDeptId,
           item: 'Laptop',
           quantity: 1,
           estimatedCost: 0,
@@ -226,11 +256,17 @@ export class RequestFormComponent {
         this.applyFieldPermissions('Draft');
       },
       error: () => {
-        const firstDeptId = this.departmentService.departments()[0]?.id ?? '';
+        const firstEmp = this.employeeService.employees()[0];
+        const defaultEmpId = firstEmp?.id ?? '';
+        const defaultEmpName = firstEmp?.name ?? '';
+        const defaultDeptId =
+          firstEmp?.departmentId ?? this.departmentService.departments()[0]?.id ?? '';
+
         this.requestForm.reset({
           requestNumber: 'EQ-1001',
-          employeeName: '',
-          departmentId: firstDeptId,
+          employeeId: defaultEmpId,
+          employeeName: defaultEmpName,
+          departmentId: defaultDeptId,
           item: 'Laptop',
           quantity: 1,
           estimatedCost: 0,
@@ -246,18 +282,59 @@ export class RequestFormComponent {
     this.editingId.set(req.id);
     this.currentStatus.set(req.status);
 
-    this.requestForm.reset({
-      requestNumber: req.requestNumber,
-      employeeName: req.employeeName,
-      departmentId: req.departmentId,
-      item: req.item,
-      quantity: req.quantity,
-      estimatedCost: req.estimatedCost,
-      neededOn: req.neededOn,
-      reason: req.reason ?? ''
+    const loadDeps$ = forkJoin({
+      departments:
+        this.departmentService.departments().length > 0
+          ? of(this.departmentService.departments())
+          : this.departmentService.loadDepartments(),
+      employees:
+        this.employeeService.employees().length > 0
+          ? of(this.employeeService.employees())
+          : this.employeeService.loadEmployees()
     });
 
-    this.applyFieldPermissions(req.status);
+    loadDeps$.subscribe({
+      next: (res) => {
+        let matchedEmpId = req.employeeId ?? '';
+        if (!matchedEmpId && req.employeeName) {
+          const match = res.employees.find(
+            (e) => e.name.toLowerCase() === req.employeeName.toLowerCase()
+          );
+          if (match) {
+            matchedEmpId = match.id;
+          }
+        }
+
+        this.requestForm.reset({
+          requestNumber: req.requestNumber,
+          employeeId: matchedEmpId,
+          employeeName: req.employeeName,
+          departmentId: req.departmentId,
+          item: req.item,
+          quantity: req.quantity,
+          estimatedCost: req.estimatedCost,
+          neededOn: req.neededOn,
+          reason: req.reason ?? ''
+        });
+
+        this.applyFieldPermissions(req.status);
+      },
+      error: () => {
+        this.requestForm.reset({
+          requestNumber: req.requestNumber,
+          employeeId: req.employeeId ?? '',
+          employeeName: req.employeeName,
+          departmentId: req.departmentId,
+          item: req.item,
+          quantity: req.quantity,
+          estimatedCost: req.estimatedCost,
+          neededOn: req.neededOn,
+          reason: req.reason ?? ''
+        });
+
+        this.applyFieldPermissions(req.status);
+      }
+    });
   }
 
   private resetInternalState(): void {
@@ -276,6 +353,7 @@ export class RequestFormComponent {
 
       case 'Submitted':
         controls.requestNumber.disable();
+        controls.employeeId.disable();
         controls.employeeName.disable();
         controls.departmentId.disable();
         controls.item.disable();
@@ -284,6 +362,7 @@ export class RequestFormComponent {
 
       case 'Approved':
         controls.requestNumber.disable();
+        controls.employeeId.disable();
         controls.employeeName.disable();
         controls.departmentId.disable();
         controls.item.disable();
@@ -350,9 +429,15 @@ export class RequestFormComponent {
           return;
         }
 
+        const empName =
+          raw.employeeName.trim() ||
+          this.employeeService.getEmployeeName(raw.employeeId) ||
+          '';
+
         const payload: Omit<EquipmentRequest, 'id' | 'createdAt'> = {
           requestNumber: raw.requestNumber.trim(),
-          employeeName: raw.employeeName.trim(),
+          employeeId: raw.employeeId,
+          employeeName: empName,
           departmentId: raw.departmentId,
           item: raw.item,
           quantity: Number(raw.quantity),

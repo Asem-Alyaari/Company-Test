@@ -8,6 +8,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { RequestFormComponent } from './request-form.component';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
 import { DepartmentService } from '../../services/department.service';
+import { EmployeeService } from '../../../employees/services/employee.service';
 import { EquipmentRequest } from '../../models/equipment-request.model';
 
 describe('RequestFormComponent - Business Rules', () => {
@@ -45,6 +46,36 @@ describe('RequestFormComponent - Business Rules', () => {
       getDepartmentName: () => 'Payroll'
     };
 
+    const mockEmployeeService = {
+      loadEmployees: () =>
+        of([
+          {
+            id: 'emp-1',
+            name: 'Mazen Omar',
+            email: 'mazen@company.com',
+            departmentId: 'payroll',
+            jobTitle: 'Developer'
+          }
+        ]),
+      employees: signal([
+        {
+          id: 'emp-1',
+          name: 'Mazen Omar',
+          email: 'mazen@company.com',
+          departmentId: 'payroll',
+          jobTitle: 'Developer'
+        }
+      ]),
+      getEmployeeById: () => ({
+        id: 'emp-1',
+        name: 'Mazen Omar',
+        email: 'mazen@company.com',
+        departmentId: 'payroll',
+        jobTitle: 'Developer'
+      }),
+      getEmployeeName: () => 'Mazen Omar'
+    };
+
     await TestBed.configureTestingModule({
       imports: [RequestFormComponent],
       providers: [
@@ -55,6 +86,7 @@ describe('RequestFormComponent - Business Rules', () => {
         ConfirmationService,
         { provide: EquipmentRequestService, useValue: mockRequestService },
         { provide: DepartmentService, useValue: mockDepartmentService },
+        { provide: EmployeeService, useValue: mockEmployeeService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -114,6 +146,7 @@ describe('RequestFormComponent - Business Rules', () => {
 
       // Verify all form controls are disabled
       expect(component.requestForm.controls.requestNumber.disabled).toBe(true);
+      expect(component.requestForm.controls.employeeId.disabled).toBe(true);
       expect(component.requestForm.controls.employeeName.disabled).toBe(true);
       expect(component.requestForm.controls.departmentId.disabled).toBe(true);
       expect(component.requestForm.controls.item.disabled).toBe(true);

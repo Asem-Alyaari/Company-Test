@@ -8,6 +8,7 @@ import { LanguageService, NotificationService } from '@core';
 import { RequestListComponent } from './request-list.component';
 import { EquipmentRequestService } from '../../services/equipment-request.service';
 import { DepartmentService } from '../../services/department.service';
+import { EmployeeService } from '../../../employees/services/employee.service';
 import { EquipmentRequest } from '../../models/equipment-request.model';
 
 describe('RequestListComponent - Pagination & Features', () => {
@@ -125,6 +126,36 @@ describe('RequestListComponent - Pagination & Features', () => {
       of({ id, ...payload } as EquipmentRequest)
   };
 
+  const mockEmployeeService = {
+    employees: () => [
+      {
+        id: '1',
+        name: 'Sara Ali',
+        email: 'sara@company.com',
+        departmentId: 'payroll',
+        jobTitle: 'Specialist'
+      }
+    ],
+    loadEmployees: () =>
+      of([
+        {
+          id: '1',
+          name: 'Sara Ali',
+          email: 'sara@company.com',
+          departmentId: 'payroll',
+          jobTitle: 'Specialist'
+        }
+      ]),
+    getEmployeeById: (id: string) => ({
+      id,
+      name: 'Sara Ali',
+      email: 'sara@company.com',
+      departmentId: 'payroll',
+      jobTitle: 'Specialist'
+    }),
+    getEmployeeName: (id: string) => 'Sara Ali'
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RequestListComponent],
@@ -137,7 +168,8 @@ describe('RequestListComponent - Pagination & Features', () => {
         ConfirmationService,
         LanguageService,
         { provide: EquipmentRequestService, useValue: mockRequestService },
-        { provide: DepartmentService, useValue: mockDepartmentService }
+        { provide: DepartmentService, useValue: mockDepartmentService },
+        { provide: EmployeeService, useValue: mockEmployeeService }
       ]
     }).compileComponents();
 

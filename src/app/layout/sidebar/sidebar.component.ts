@@ -53,6 +53,11 @@ export class SidebarComponent {
       routerLink: '/departments'
     },
     {
+      labelKey: 'nav.employees',
+      icon: 'pi pi-users',
+      routerLink: '/employees'
+    },
+    {
       labelKey: 'nav.createRequest',
       icon: 'pi pi-plus-circle',
       routerLink: '/equipment-requests/new'
