@@ -1,0 +1,95 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--p-surface-ground, #f8fafc);
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: var(--p-content-background, #ffffff);
+  border-bottom: 1px solid var(--p-content-border-color, #e2e8f0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  .topbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .topbar-start {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    :host ::ng-deep .sidebar-toggle-btn {
+      color: var(--p-text-color, #334155);
+      font-size: 1.15rem;
+    }
+  }
+
+  .app-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    color: inherit;
+
+    .brand-icon {
+      font-size: 1.35rem;
+      color: var(--p-primary-500, #10b981);
+    }
+
+    .brand-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--p-text-color, #0f172a);
+      letter-spacing: -0.01em;
+    }
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    :host ::ng-deep .lang-switch-btn {
+      font-weight: 600;
+      border-radius: 8px;
+    }
+
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      background-color: var(--p-surface-100, #f1f5f9);
+      color: var(--p-text-color, #334155);
+      font-size: 0.85rem;
+      font-weight: 600;
+
+      .user-chip-icon {
+        color: var(--p-primary-500, #10b981);
+        font-size: 0.875rem;
+      }
+
+      .user-chip-name {
+        max-width: 140px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+.app-content {
+  flex: 1 1 auto;
+}

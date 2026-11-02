@@ -1,0 +1,17 @@
+.layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--p-surface-ground, #f8fafc);
+}
+
+.main-content {
+  flex: 1 1 auto;
+  padding: 1.5rem;
+
+  .content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}

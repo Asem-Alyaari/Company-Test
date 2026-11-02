@@ -1,0 +1,227 @@
+.details-page-container {
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.details-wrapper {
+  :host ::ng-deep .details-card {
+    border-radius: 16px;
+    border: 1px solid var(--p-content-border-color, #e2e8f0);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    background-color: var(--p-content-background, #ffffff);
+
+    .p-card-body {
+      padding: 1.75rem 2rem;
+    }
+  }
+}
+
+.details-header {
+  padding: 1.5rem 2rem 0.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .request-num-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--p-primary-600, #16a34a);
+      font-family: ui-monospace, monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .details-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--p-text-color, #0f172a);
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    &.span-full {
+      @media (min-width: 640px) {
+        grid-column: span 2;
+      }
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--p-text-muted-color, #64748b);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .info-val {
+      font-size: 1.05rem;
+      color: var(--p-text-color, #1e293b);
+    }
+
+    .cost-text {
+      direction: ltr !important;
+      text-align: start;
+      font-family: monospace;
+      font-size: 1.2rem;
+      color: var(--p-primary-600, #16a34a);
+      font-weight: 800;
+    }
+
+    .text-muted {
+      color: var(--p-text-muted-color, #64748b);
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.dept-badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.25rem 0.65rem;
+  background-color: var(--p-surface-100, #f1f5f9);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--p-text-color, #334155);
+}
+
+.item-val {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+
+  i {
+    color: var(--p-primary-500, #10b981);
+  }
+}
+
+.reason-box {
+  padding: 0.85rem 1rem;
+  background-color: var(--p-surface-50, #f8fafc);
+  border: 1px solid var(--p-content-border-color, #e2e8f0);
+  border-radius: 8px;
+  color: var(--p-text-color, #334155);
+  font-size: 0.925rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.details-divider {
+  margin: 1.5rem 0;
+}
+
+.details-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+
+  .status-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+:host ::ng-deep {
+  .status-badge {
+    font-size: 0.825rem;
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border-radius: 6px;
+  }
+
+  .status-draft {
+    background-color: #64748b !important;
+    color: #ffffff !important;
+  }
+
+  .status-submitted {
+    background-color: #0284c7 !important;
+    color: #ffffff !important;
+  }
+
+  .status-approved {
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+  }
+
+  .status-rejected {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
+  }
+
+  .status-delivered {
+    background-color: #064e3b !important;
+    color: #ecfdf5 !important;
+  }
+}
+
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.not-found-card {
+  text-align: center;
+  background-color: var(--p-content-background, #ffffff);
+  border: 1px dashed var(--p-content-border-color, #cbd5e1);
+  border-radius: 16px;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  .not-found-icon {
+    font-size: 3.5rem;
+    color: var(--p-text-muted-color, #94a3b8);
+  }
+
+  .not-found-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--p-text-color, #0f172a);
+    margin: 0;
+  }
+
+  .not-found-desc {
+    font-size: 0.95rem;
+    color: var(--p-text-muted-color, #64748b);
+    margin: 0;
+    max-width: 450px;
+  }
+}
+
+.state-container {
+  padding: 4rem;
+  display: flex;
+  justify-content: center;
+}

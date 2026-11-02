@@ -1,0 +1,82 @@
+<p-drawer
+  [(visible)]="isOpen"
+  [position]="drawerPosition()"
+  [modal]="true"
+  styleClass="app-sidebar-drawer"
+>
+  <ng-template #header>
+    <div class="sidebar-brand">
+      <div class="brand-icon-wrapper">
+        <i class="pi pi-shield brand-icon" aria-hidden="true"></i>
+      </div>
+      <div class="brand-meta">
+        <h3 class="brand-title">{{ 'app.title' | translate }}</h3>
+        <span class="brand-subtitle">{{ 'auth.subtitle' | translate }}</span>
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="sidebar-content">
+    @if (authService.currentUser(); as user) {
+      <div class="user-card">
+        <p-avatar
+          [label]="userInitials()"
+          shape="circle"
+          size="large"
+          styleClass="user-avatar"
+        />
+        <div class="user-details">
+          <strong class="user-name">{{ user.name }}</strong>
+          <span class="user-email">{{ user.email }}</span>
+          <span class="role-badge">{{ user.role }}</span>
+        </div>
+      </div>
+      <p-divider styleClass="sidebar-divider" />
+    }
+
+    <nav class="sidebar-nav" aria-label="Main Navigation">
+      <ul class="nav-list">
+        @for (item of navItems(); track item.routerLink) {
+          <li class="nav-item">
+            <a
+              [routerLink]="item.routerLink"
+              [routerLinkActiveOptions]="{ exact: !!item.exact }"
+              routerLinkActive="active"
+              (click)="layoutService.closeSidebar()"
+              class="nav-link"
+            >
+              <i [class]="item.icon" class="nav-icon" aria-hidden="true"></i>
+              <span class="nav-label">{{ item.labelKey | translate }}</span>
+              @if (item.badge) {
+                <span class="nav-badge">{{ item.badge }}</span>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  </div>
+
+  <ng-template #footer>
+    <div class="sidebar-footer">
+      @if (authService.isAuthenticated()) {
+        <p-button
+          [label]="'auth.logout' | translate"
+          icon="pi pi-sign-out"
+          severity="danger"
+          [outlined]="true"
+          (onClick)="onLogout()"
+          styleClass="w-full logout-btn"
+        />
+      } @else {
+        <p-button
+          [label]="'auth.signIn' | translate"
+          icon="pi pi-sign-in"
+          severity="secondary"
+          (onClick)="onNavigate('/auth/login')"
+          styleClass="w-full"
+        />
+      }
+    </div>
+  </ng-template>
+</p-drawer>

@@ -1,0 +1,14 @@
+.form-error-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--p-red-500, #ef4444);
+  font-size: 0.825rem;
+  margin-top: 0.25rem;
+  line-height: 1.25;
+
+  .error-icon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+}

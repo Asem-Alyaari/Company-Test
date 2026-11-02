@@ -1,0 +1,318 @@
+<div class="form-page-container">
+  @if (isLoading()) {
+    <div class="state-container">
+      <app-loader />
+    </div>
+  } @else if (loadError()) {
+    <div class="error-container">
+      <i class="pi pi-exclamation-triangle error-icon" aria-hidden="true"></i>
+      <h3>{{ 'requests.errorTitle' | translate }}</h3>
+      <p>{{ loadError() }}</p>
+      <p-button
+        [label]="'form.back' | translate"
+        icon="pi pi-arrow-left"
+        routerLink="/equipment-requests"
+      />
+    </div>
+  } @else {
+    <div class="form-wrapper">
+      <p-card styleClass="request-form-card">
+        <!-- Form Header -->
+        <ng-template #header>
+          <div class="form-header">
+            <div class="header-left">
+              <p-button
+                icon="pi pi-arrow-left"
+                [text]="true"
+                [rounded]="true"
+                severity="secondary"
+                routerLink="/equipment-requests"
+                [ariaLabel]="'form.back' | translate"
+              />
+              <div>
+                <h2 class="form-title">
+                  {{
+                    isAddMode()
+                      ? ('form.createTitle' | translate)
+                      : ('form.editTitle'
+                        | translate: { number: requestForm.controls.requestNumber.value })
+                  }}
+                </h2>
+                <span class="status-indicator">
+                  <p-tag
+                    [value]="'statuses.' + currentStatus() | translate"
+                    [severity]="
+                      currentStatus() === 'Approved' || currentStatus() === 'Delivered'
+                        ? 'success'
+                        : currentStatus() === 'Rejected'
+                          ? 'danger'
+                          : currentStatus() === 'Submitted'
+                            ? 'info'
+                            : 'secondary'
+                    "
+                  />
+                </span>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <!-- Status Permission Notice -->
+        <div class="status-notice-box" [class]="'notice-' + currentStatus().toLowerCase()">
+          <i class="pi pi-info-circle notice-icon" aria-hidden="true"></i>
+          <span>
+            @if (currentStatus() === 'Draft') {
+              {{ 'form.statusNoticeDraft' | translate }}
+            } @else if (currentStatus() === 'Submitted') {
+              {{ 'form.statusNoticeSubmitted' | translate }}
+            } @else if (currentStatus() === 'Approved') {
+              {{ 'form.statusNoticeApproved' | translate }}
+            } @else {
+              {{
+                'form.statusNoticeReadOnly'
+                  | translate: { status: 'statuses.' + currentStatus() | translate }
+              }}
+            }
+          </span>
+        </div>
+
+        <!-- The Reactive Form -->
+        <form [formGroup]="requestForm" class="equipment-form" novalidate>
+          <div class="form-grid">
+            <!-- Request Number -->
+            <div class="field-col">
+              <label for="requestNumber" class="field-label">
+                {{ 'form.requestNumber' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <input
+                pInputText
+                id="requestNumber"
+                type="text"
+                formControlName="requestNumber"
+                placeholder="EQ-1006"
+                class="w-full font-mono"
+              />
+              <small class="field-help">{{ 'form.requestNumberHelp' | translate }}</small>
+              <app-form-error
+                [control]="requestForm.controls.requestNumber"
+                [fieldName]="'form.requestNumber' | translate"
+              />
+            </div>
+
+            <!-- Employee Name -->
+            <div class="field-col">
+              <label for="employeeName" class="field-label">
+                {{ 'form.employeeName' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <input
+                pInputText
+                id="employeeName"
+                type="text"
+                formControlName="employeeName"
+                class="w-full"
+              />
+              <app-form-error
+                [control]="requestForm.controls.employeeName"
+                [fieldName]="'form.employeeName' | translate"
+              />
+            </div>
+
+            <!-- Department -->
+            <div class="field-col">
+              <label for="departmentId" class="field-label">
+                {{ 'form.department' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <p-select
+                id="departmentId"
+                formControlName="departmentId"
+                [options]="departmentOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [filter]="true"
+                [placeholder]="'form.selectDepartment' | translate"
+                styleClass="w-full"
+              />
+              <app-form-error
+                [control]="requestForm.controls.departmentId"
+                [fieldName]="'form.department' | translate"
+              />
+            </div>
+
+            <!-- Equipment Item -->
+            <div class="field-col">
+              <label for="item" class="field-label">
+                {{ 'form.item' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <p-select
+                id="item"
+                formControlName="item"
+                [options]="itemOptions()"
+                optionLabel="label"
+                optionValue="value"
+                [placeholder]="'form.selectItem' | translate"
+                styleClass="w-full"
+              />
+              <app-form-error
+                [control]="requestForm.controls.item"
+                [fieldName]="'form.item' | translate"
+              />
+            </div>
+
+            <!-- Quantity -->
+            <div class="field-col">
+              <label for="quantity" class="field-label">
+                {{ 'form.quantity' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <input
+                pInputText
+                id="quantity"
+                type="number"
+                min="1"
+                max="10"
+                step="1"
+                formControlName="quantity"
+                class="w-full font-mono"
+              />
+              <app-form-error
+                [control]="requestForm.controls.quantity"
+                [fieldName]="'form.quantity' | translate"
+              />
+            </div>
+
+            <!-- Estimated Cost -->
+            <div class="field-col">
+              <label for="estimatedCost" class="field-label">
+                {{ 'form.estimatedCost' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <input
+                pInputText
+                id="estimatedCost"
+                type="number"
+                step="0.01"
+                min="0.01"
+                formControlName="estimatedCost"
+                class="w-full font-mono"
+                dir="ltr"
+              />
+              <app-form-error
+                [control]="requestForm.controls.estimatedCost"
+                [fieldName]="'form.estimatedCost' | translate"
+              />
+            </div>
+
+            <!-- Needed On Date -->
+            <div class="field-col">
+              <label for="neededOn" class="field-label">
+                {{ 'form.neededOn' | translate }}
+                <span class="required-star">*</span>
+              </label>
+              <input
+                pInputText
+                id="neededOn"
+                type="date"
+                [min]="minDateString"
+                formControlName="neededOn"
+                class="w-full font-mono"
+              />
+              <app-form-error
+                [control]="requestForm.controls.neededOn"
+                [fieldName]="'form.neededOn' | translate"
+              />
+            </div>
+
+            <!-- Reason (Full width) -->
+            <div class="field-col span-2">
+              <label for="reason" class="field-label">
+                {{ 'form.reason' | translate }}
+                <span class="optional-hint">(Optional, max 250)</span>
+              </label>
+              <textarea
+                pTextarea
+                id="reason"
+                formControlName="reason"
+                rows="3"
+                maxlength="250"
+                [placeholder]="'form.reasonPlaceholder' | translate"
+                class="w-full"
+              ></textarea>
+              <app-form-error
+                [control]="requestForm.controls.reason"
+                [fieldName]="'form.reason' | translate"
+              />
+            </div>
+          </div>
+
+          <!-- Form Actions Footer -->
+          <div class="form-actions-bar">
+            <p-button
+              [label]="'form.cancel' | translate"
+              icon="pi pi-times"
+              severity="secondary"
+              [outlined]="true"
+              routerLink="/equipment-requests"
+              [disabled]="isSaving()"
+            />
+
+            <!-- Draft or Create Mode Actions -->
+            @if (isAddMode() || currentStatus() === 'Draft') {
+              <p-button
+                [label]="'form.saveDraft' | translate"
+                icon="pi pi-save"
+                severity="secondary"
+                (onClick)="saveDraft()"
+                [loading]="isSaving()"
+                [disabled]="isSaving()"
+              />
+
+              <p-button
+                [label]="'form.submitRequest' | translate"
+                icon="pi pi-send"
+                (onClick)="submitRequest()"
+                [loading]="isSaving()"
+                [disabled]="isSaving()"
+              />
+            }
+
+            <!-- Submitted Mode Action -->
+            @else if (currentStatus() === 'Submitted') {
+              <p-button
+                [label]="'form.submitRequest' | translate"
+                icon="pi pi-check"
+                (onClick)="submitRequest()"
+                [loading]="isSaving()"
+                [disabled]="isSaving()"
+              />
+            }
+
+            <!-- Approved Mode Actions -->
+            @else if (currentStatus() === 'Approved') {
+              <p-button
+                [label]="'form.saveDraft' | translate"
+                icon="pi pi-save"
+                severity="secondary"
+                (onClick)="processSave('Approved')"
+                [loading]="isSaving()"
+                [disabled]="isSaving()"
+              />
+
+              <p-button
+                [label]="'form.markAsDelivered' | translate"
+                icon="pi pi-box"
+                severity="success"
+                (onClick)="markAsDelivered()"
+                [loading]="isSaving()"
+                [disabled]="isSaving()"
+              />
+            }
+          </div>
+        </form>
+      </p-card>
+    </div>
+  }
+</div>

@@ -1,0 +1,12 @@
+@if (loadingService.isLoading()) {
+  <div class="loader-overlay" role="status" aria-live="polite">
+    <div class="loader-container">
+      <p-progressSpinner
+        strokeWidth="4"
+        fill="transparent"
+        animationDuration=".8s"
+        ariaLabel="Loading..."
+      />
+    </div>
+  </div>
+}

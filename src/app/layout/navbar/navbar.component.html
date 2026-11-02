@@ -1,0 +1,49 @@
+<header class="app-header">
+  <p-menubar [model]="items()">
+    <ng-template #start>
+      <div class="header-start">
+        <p-button
+          icon="pi pi-bars"
+          [rounded]="true"
+          [text]="true"
+          (onClick)="layoutService.toggleSidebar()"
+          ariaLabel="Toggle Navigation Sidebar"
+          styleClass="sidebar-toggle-btn"
+        />
+        <div class="brand">
+          <i class="pi pi-shield brand-icon" aria-hidden="true"></i>
+          <span class="brand-text">Company-Test</span>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template #end>
+      <div class="header-actions">
+        <p-button
+          [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+          [rounded]="true"
+          [text]="true"
+          severity="secondary"
+          (onClick)="toggleDarkMode()"
+          ariaLabel="Toggle color theme"
+        />
+
+        @if (authService.isAuthenticated()) {
+          <div class="user-profile">
+            <i class="pi pi-user user-icon" aria-hidden="true"></i>
+            <span class="user-name">{{ authService.currentUser()?.name }}</span>
+          </div>
+
+          <p-button
+            label="Logout"
+            icon="pi pi-sign-out"
+            severity="danger"
+            [text]="true"
+            size="small"
+            (onClick)="onLogout()"
+            ariaLabel="Sign out of your account"
+          />
+        }
+      </div>
+    </ng-template>
+  </p-menubar>
+</header>

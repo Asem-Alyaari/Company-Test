@@ -1,0 +1,84 @@
+<p-toast position="top-right" />
+<app-loader />
+
+<div class="login-wrapper">
+  <div class="login-container">
+    <p-card styleClass="login-card">
+      <ng-template #header>
+        <div class="login-header">
+          <div class="brand-badge">
+            <i class="pi pi-shield brand-icon" aria-hidden="true"></i>
+          </div>
+          <h2 class="title">{{ 'auth.title' | translate }}</h2>
+          <p class="subtitle">{{ 'auth.subtitle' | translate }}</p>
+        </div>
+      </ng-template>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate class="login-form">
+        <div class="form-field">
+          <label for="email" class="form-label">{{ 'auth.email' | translate }}</label>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            formControlName="email"
+            [placeholder]="'auth.emailPlaceholder' | translate"
+            class="w-full"
+            autocomplete="email"
+          />
+          <app-form-error
+            [control]="loginForm.controls.email"
+            [fieldName]="'auth.email' | translate"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="password" class="form-label">{{ 'auth.password' | translate }}</label>
+          <p-password
+            id="password"
+            formControlName="password"
+            [feedback]="false"
+            [toggleMask]="true"
+            [placeholder]="'auth.passwordPlaceholder' | translate"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            autocomplete="current-password"
+          />
+          <app-form-error
+            [control]="loginForm.controls.password"
+            [fieldName]="'auth.password' | translate"
+          />
+        </div>
+
+        <div class="form-actions">
+          <p-button
+            type="submit"
+            [label]="'auth.signIn' | translate"
+            icon="pi pi-sign-in"
+            [loading]="isSubmitting()"
+            styleClass="w-full login-btn"
+          />
+
+          <p-button
+            type="button"
+            [label]="'auth.fillDemo' | translate"
+            icon="pi pi-key"
+            severity="secondary"
+            [outlined]="true"
+            (onClick)="fillDemoCredentials()"
+            styleClass="w-full demo-btn"
+          />
+        </div>
+      </form>
+
+      <ng-template #footer>
+        <div class="login-footer">
+          <small class="credentials-hint">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            {{ 'auth.demoHint' | translate }} <strong>admin@company.com</strong> / <strong>Password123</strong>
+          </small>
+        </div>
+      </ng-template>
+    </p-card>
+  </div>
+</div>

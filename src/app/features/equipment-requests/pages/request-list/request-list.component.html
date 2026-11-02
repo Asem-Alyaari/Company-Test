@@ -1,0 +1,253 @@
+<div class="page-container">
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="header-titles">
+      <h1 class="page-title">{{ 'requests.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'requests.subtitle' | translate }}</p>
+    </div>
+
+    <div class="header-actions">
+      <p-button
+        [label]="'requests.exportButton' | translate"
+        icon="pi pi-file-excel"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="exportCsv()"
+        [disabled]="loading() || visibleCount() === 0"
+      />
+
+      <p-button
+        [label]="'requests.createButton' | translate"
+        icon="pi pi-plus"
+        routerLink="/equipment-requests/new"
+      />
+    </div>
+  </header>
+
+  <!-- Filter & Search Toolbar -->
+  <section class="toolbar-card">
+    <div class="search-box">
+      <i class="pi pi-search search-icon" aria-hidden="true"></i>
+      <input
+        pInputText
+        type="text"
+        [value]="searchQuery()"
+        [placeholder]="'requests.searchPlaceholder' | translate"
+        (keydown.enter)="onSearchCommit($event)"
+        (blur)="onSearchCommit($event)"
+        class="search-input"
+      />
+    </div>
+
+    <div class="filters-group">
+      <div class="filter-item">
+        <p-select
+          [options]="departmentOptions()"
+          [ngModel]="selectedDepartment()"
+          (ngModelChange)="onDepartmentChange($event)"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'requests.allDepartments' | translate"
+          styleClass="filter-select"
+        />
+      </div>
+
+      <div class="filter-item">
+        <p-select
+          [options]="statusOptions()"
+          [ngModel]="selectedStatus()"
+          (ngModelChange)="onStatusChange($event)"
+          optionLabel="label"
+          optionValue="value"
+          [placeholder]="'requests.allStatuses' | translate"
+          styleClass="filter-select"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Visible Rows Counter -->
+  <div class="results-meta">
+    <span class="count-badge">
+      <i class="pi pi-list" aria-hidden="true"></i>
+      {{ 'requests.showingRows' | translate: { count: visibleCount() } }}
+    </span>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="state-container loading-state">
+      <app-loader />
+    </div>
+  }
+
+  <!-- Error State -->
+  @else if (error()) {
+    <div class="state-container error-state" role="alert">
+      <div class="error-card">
+        <i class="pi pi-exclamation-circle error-big-icon" aria-hidden="true"></i>
+        <h3 class="error-title">{{ 'requests.errorTitle' | translate }}</h3>
+        <p class="error-message">{{ 'requests.errorMessage' | translate }}</p>
+        <p-button
+          [label]="'requests.retry' | translate"
+          icon="pi pi-refresh"
+          severity="danger"
+          (onClick)="loadData()"
+        />
+      </div>
+    </div>
+  }
+
+  <!-- Data Table -->
+  @else {
+    <div class="table-card">
+      <p-table
+        [value]="filteredRequests()"
+        [responsiveLayout]="'scroll'"
+        styleClass="p-datatable-striped"
+        sortMode="multiple"
+        [paginator]="true"
+        [rows]="rowsPerPage()"
+        [first]="firstRowIndex()"
+        [rowsPerPageOptions]="rowsPerPageOptions"
+        [alwaysShowPaginator]="true"
+        [showCurrentPageReport]="true"
+        [currentPageReportTemplate]="pageReportTemplate()"
+        (onPage)="onPageChange($event)"
+      >
+        <ng-template #header>
+          <tr>
+            <th pSortableColumn="requestNumber" class="col-num">
+              {{ 'columns.requestNumber' | translate }}
+              <p-sortIcon field="requestNumber" />
+            </th>
+            <th class="col-emp">{{ 'columns.employee' | translate }}</th>
+            <th class="col-dept">{{ 'columns.department' | translate }}</th>
+            <th class="col-item">{{ 'columns.item' | translate }}</th>
+            <th class="col-qty">{{ 'columns.quantity' | translate }}</th>
+            <th pSortableColumn="estimatedCost" class="col-cost">
+              {{ 'columns.estimatedCost' | translate }}
+              <p-sortIcon field="estimatedCost" />
+            </th>
+            <th pSortableColumn="neededOn" class="col-date">
+              {{ 'columns.neededOn' | translate }}
+              <p-sortIcon field="neededOn" />
+            </th>
+            <th class="col-status">{{ 'columns.status' | translate }}</th>
+            <th class="col-actions">{{ 'columns.actions' | translate }}</th>
+          </tr>
+        </ng-template>
+
+        <ng-template #body let-request>
+          <tr class="table-row">
+            <!-- Request Number (Clickable Link) -->
+            <td class="col-num font-mono">
+              <a
+                [routerLink]="['/equipment-requests', request.id]"
+                class="request-link"
+                title="View Details"
+              >
+                {{ request.requestNumber }}
+              </a>
+            </td>
+
+            <!-- Employee -->
+            <td class="col-emp font-medium">
+              {{ request.employeeName }}
+            </td>
+
+            <!-- Department (Shows name, not id) -->
+            <td class="col-dept">
+              <span class="dept-pill">
+                {{ departmentService.getDepartmentName(request.departmentId) }}
+              </span>
+            </td>
+
+            <!-- Item -->
+            <td class="col-item">
+              <span class="item-name">
+                <i class="pi pi-box item-icon" aria-hidden="true"></i>
+                {{ 'items.' + request.item | translate }}
+              </span>
+            </td>
+
+            <!-- Quantity -->
+            <td class="col-qty text-center font-mono">
+              {{ request.quantity }}
+            </td>
+
+            <!-- Estimated Cost (direction LTR in both Arabic and English, 2 decimal places) -->
+            <td class="col-cost cost-cell" dir="ltr">
+              {{ requestService.formatCost(request.estimatedCost) }}
+            </td>
+
+            <!-- Needed On -->
+            <td class="col-date font-mono">
+              {{ request.neededOn }}
+            </td>
+
+            <!-- Status Badge -->
+            <td class="col-status">
+              <p-tag
+                [value]="'statuses.' + request.status | translate"
+                [severity]="getStatusSeverity(request.status)"
+                [styleClass]="'status-badge status-' + request.status.toLowerCase()"
+              />
+            </td>
+
+            <!-- Actions -->
+            <td class="col-actions">
+              <div class="row-actions">
+                <p-button
+                  icon="pi pi-eye"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  size="small"
+                  [routerLink]="['/equipment-requests', request.id]"
+                  ariaLabel="View Details"
+                />
+
+                @if (request.status === 'Draft' || request.status === 'Submitted' || request.status === 'Approved') {
+                  <p-button
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="info"
+                    size="small"
+                    [routerLink]="['/equipment-requests', request.id, 'edit']"
+                    ariaLabel="Edit Request"
+                  />
+                }
+
+                @if (request.status === 'Draft') {
+                  <p-button
+                    icon="pi pi-trash"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="danger"
+                    size="small"
+                    (onClick)="deleteDraft(request, $event)"
+                    ariaLabel="Delete Draft"
+                  />
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+          <tr>
+            <td colspan="9" class="p-0">
+              <app-empty-state
+                [title]="'requests.emptyTitle' | translate"
+                [message]="'requests.emptyMessage' | translate"
+                icon="pi pi-inbox"
+              />
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+</div>

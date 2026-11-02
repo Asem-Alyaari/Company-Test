@@ -1,0 +1,129 @@
+{
+  "app": {
+    "title": "Equipment Requests Portal",
+    "switchLanguage": "العربية"
+  },
+  "requests": {
+    "title": "Equipment Requests",
+    "subtitle": "Manage and track organizational hardware and equipment requisitions",
+    "createButton": "Create Request",
+    "exportButton": "Export CSV",
+    "searchPlaceholder": "Search by request number, employee, or item (Enter or blur)...",
+    "allDepartments": "All Departments",
+    "allStatuses": "All Statuses",
+    "showingRows": "Showing {count} visible requests",
+    "emptyTitle": "No requests found",
+    "emptyMessage": "No equipment requests match your active search and filter criteria.",
+    "pageReport": "Showing {first} to {last} of {totalRecords} requests",
+    "errorTitle": "Failed to load requests",
+    "errorMessage": "An error occurred while loading equipment requests from the server.",
+    "retry": "Try Again"
+  },
+  "columns": {
+    "requestNumber": "Request #",
+    "employee": "Employee",
+    "department": "Department",
+    "item": "Item",
+    "quantity": "Quantity",
+    "estimatedCost": "Estimated Cost",
+    "neededOn": "Needed On",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "form": {
+    "createTitle": "Create Equipment Request",
+    "editTitle": "Edit Equipment Request - {number}",
+    "requestNumber": "Request Number",
+    "requestNumberHelp": "Must start with EQ- followed by digits (e.g. EQ-1006)",
+    "employeeName": "Employee Name",
+    "department": "Department",
+    "selectDepartment": "Select Department",
+    "item": "Equipment Item",
+    "selectItem": "Select Item",
+    "quantity": "Quantity (1-10)",
+    "estimatedCost": "Estimated Cost (SAR)",
+    "neededOn": "Needed On Date",
+    "reason": "Reason for Request",
+    "reasonPlaceholder": "Provide a brief justification for this equipment request (optional, max 250 characters)...",
+    "status": "Current Status",
+    "createdAt": "Created At",
+    "saveDraft": "Save Draft",
+    "submitRequest": "Submit Request",
+    "markAsDelivered": "Mark as Delivered",
+    "cancel": "Cancel",
+    "back": "Back to List",
+    "statusNoticeDraft": "Draft mode: all fields can be edited.",
+    "statusNoticeSubmitted": "Submitted mode: only reason, date, and quantity can be modified.",
+    "statusNoticeApproved": "Approved mode: only the needed date can be adjusted.",
+    "statusNoticeReadOnly": "This request is {status} and is strictly read-only."
+  },
+  "details": {
+    "title": "Equipment Request Details",
+    "notFoundTitle": "Request Not Found",
+    "notFoundMessage": "The requested equipment requisition ID could not be found or has been removed.",
+    "backButton": "Back to Requests",
+    "editButton": "Edit Request",
+    "deleteButton": "Delete Draft",
+    "deliverButton": "Mark as Delivered"
+  },
+  "items": {
+    "Laptop": "Laptop",
+    "Monitor": "Monitor",
+    "Mobile": "Mobile",
+    "Headset": "Headset"
+  },
+  "statuses": {
+    "Draft": "Draft",
+    "Submitted": "Submitted",
+    "Approved": "Approved",
+    "Rejected": "Rejected",
+    "Delivered": "Delivered"
+  },
+  "dialog": {
+    "deleteDraftTitle": "Delete Draft Confirmation",
+    "deleteDraftMessage": "Are you sure you want to permanently delete draft request {number}?",
+    "deliverTitle": "Confirm Delivery",
+    "deliverMessage": "Are you sure you want to mark equipment request {number} as Delivered?",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "savedSuccess": "Equipment request saved successfully.",
+    "submittedSuccess": "Equipment request has been submitted for approval.",
+    "deliveredSuccess": "Equipment request has been marked as Delivered.",
+    "deletedSuccess": "Draft equipment request {number} deleted successfully.",
+    "exportWarningTitle": "Export Warning",
+    "exportNoRows": "No visible records to export. Please adjust your search or filters."
+  },
+  "validation": {
+    "required": "{field} is required.",
+    "requestNumberFormat": "Request number must start with 'EQ-' followed by digits.",
+    "requestNumberUnique": "This request number already exists. Please choose a unique number.",
+    "employeeMinLength": "Employee name must be at least 2 characters.",
+    "quantityRange": "Quantity must be an integer between 1 and 10.",
+    "costPositive": "Estimated cost must be greater than zero.",
+    "costDecimals": "Estimated cost must have at most 2 decimal places.",
+    "datePast": "Needed date must be today or a future date.",
+    "reasonMaxLength": "Reason cannot exceed 250 characters."
+  },
+  "auth": {
+    "title": "Company Pilot Portal",
+    "subtitle": "Enterprise Portal Authentication",
+    "email": "Email Address",
+    "emailPlaceholder": "admin@company.com",
+    "password": "Password",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Sign In",
+    "logout": "Logout",
+    "fillDemo": "Fill Demo Credentials",
+    "demoHint": "Demo:",
+    "loginFailed": "Login Failed",
+    "invalidCredentials": "Invalid credentials. Please verify your email and password."
+  },
+  "nav": {
+    "toggleSidebar": "Toggle Navigation Sidebar",
+    "dashboard": "Dashboard",
+    "equipmentRequests": "Equipment Requests",
+    "createRequest": "Create Request"
+  }
+}

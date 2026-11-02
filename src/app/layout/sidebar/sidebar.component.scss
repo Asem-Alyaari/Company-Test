@@ -1,0 +1,193 @@
+:host ::ng-deep .app-sidebar-drawer {
+  width: 320px;
+  max-width: 85vw;
+
+  .p-drawer-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1.25rem 1.25rem 1.25rem;
+  }
+
+  .p-drawer-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--p-content-border-color, #e2e8f0);
+  }
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .brand-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 8px;
+    background-color: var(--p-primary-50, #f0fdf4);
+    color: var(--p-primary-500, #10b981);
+
+    .brand-icon {
+      font-size: 1.35rem;
+    }
+  }
+
+  .brand-meta {
+    display: flex;
+    flex-direction: column;
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--p-text-color, #1e293b);
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--p-text-muted-color, #64748b);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem;
+  background-color: var(--p-surface-50, #f8fafc);
+  border-radius: 12px;
+  border: 1px solid var(--p-content-border-color, #e2e8f0);
+
+  :host ::ng-deep .user-avatar {
+    background-color: var(--p-primary-500, #10b981);
+    color: #ffffff;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    overflow: hidden;
+
+    .user-name {
+      font-size: 0.925rem;
+      color: var(--p-text-color, #1e293b);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 0.775rem;
+      color: var(--p-text-muted-color, #64748b);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .role-badge {
+      display: inline-block;
+      align-self: flex-start;
+      margin-top: 0.2rem;
+      font-size: 0.675rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      background-color: var(--p-primary-100, #dcfce7);
+      color: var(--p-primary-700, #15803d);
+    }
+  }
+}
+
+.sidebar-divider {
+  margin: 1rem 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+
+  .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    .nav-item {
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        color: var(--p-text-muted-color, #64748b);
+        text-decoration: none;
+        font-size: 0.925rem;
+        font-weight: 500;
+        transition: all 0.15s ease-in-out;
+
+        .nav-icon {
+          font-size: 1.15rem;
+          color: var(--p-text-muted-color, #94a3b8);
+          transition: color 0.15s ease-in-out;
+        }
+
+        .nav-label {
+          flex: 1;
+        }
+
+        .nav-badge {
+          font-size: 0.7rem;
+          padding: 0.2rem 0.5rem;
+          border-radius: 10px;
+          background-color: var(--p-surface-200, #e2e8f0);
+          color: var(--p-text-color, #334155);
+        }
+
+        &:hover {
+          background-color: var(--p-surface-100, #f1f5f9);
+          color: var(--p-text-color, #0f172a);
+
+          .nav-icon {
+            color: var(--p-primary-500, #10b981);
+          }
+        }
+
+        &.active {
+          background-color: var(--p-primary-50, #f0fdf4);
+          color: var(--p-primary-600, #16a34a);
+          font-weight: 600;
+
+          .nav-icon {
+            color: var(--p-primary-600, #16a34a);
+          }
+        }
+      }
+    }
+  }
+}
+
+.sidebar-footer {
+  width: 100%;
+
+  .w-full {
+    width: 100%;
+  }
+}

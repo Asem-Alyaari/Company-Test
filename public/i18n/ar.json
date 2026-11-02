@@ -1,0 +1,129 @@
+{
+  "app": {
+    "title": "بوابة طلبات المعدات والأجهزة",
+    "switchLanguage": "English"
+  },
+  "requests": {
+    "title": "طلبات المعدات",
+    "subtitle": "إدارة ومتابعة طلبات الأجهزة والمعدات لموظفي الشركة بكفاءة",
+    "createButton": "إنشاء طلب جديد",
+    "exportButton": "تصدير إلى CSV",
+    "searchPlaceholder": "البحث برقم الطلب، اسم الموظف، أو المعدة (اضغط Enter أو عند الخروج)...",
+    "allDepartments": "جميع الأقسام",
+    "allStatuses": "جميع الحالات",
+    "showingRows": "عرض {count} من الطلبات المتاحة",
+    "emptyTitle": "لا توجد طلبات",
+    "emptyMessage": "لم يتم العثور على أي طلبات تطابق معايير البحث والتصفية المحددة.",
+    "pageReport": "عرض من {first} إلى {last} من أصل {totalRecords} طلب",
+    "errorTitle": "تعذر تحميل الطلبات",
+    "errorMessage": "حدث خطأ أثناء محاولة جلب طلبات المعدات من الخادم. يرجى المحاولة مرة أخرى.",
+    "retry": "إعادة المحاولة"
+  },
+  "columns": {
+    "requestNumber": "رقم الطلب",
+    "employee": "الموظف",
+    "department": "القسم",
+    "item": "المعدة",
+    "quantity": "الكمية",
+    "estimatedCost": "التكلفة التقديرية",
+    "neededOn": "تاريخ الاحتياج",
+    "status": "الحالة",
+    "actions": "الإجراءات"
+  },
+  "form": {
+    "createTitle": "إنشاء طلب معدات جديد",
+    "editTitle": "تعديل طلب المعدات - {number}",
+    "requestNumber": "رقم الطلب",
+    "requestNumberHelp": "يجب أن يبدأ بـ EQ- متبوعاً بأرقام (مثال: EQ-1006)",
+    "employeeName": "اسم الموظف",
+    "department": "القسم",
+    "selectDepartment": "اختر القسم",
+    "item": "نوع المعدة",
+    "selectItem": "اختر المعدة",
+    "quantity": "الكمية (من 1 إلى 10)",
+    "estimatedCost": "التكلفة التقديرية (ريال)",
+    "neededOn": "تاريخ الاحتياج",
+    "reason": "سبب الطلب",
+    "reasonPlaceholder": "اذكر مبرر طلب المعدة باختصار (اختياري، 250 حرف كحد أقصى)...",
+    "status": "الحالة الحالية",
+    "createdAt": "تاريخ الإنشاء",
+    "saveDraft": "حفظ كمسودة",
+    "submitRequest": "إرسال الطلب للاعتماد",
+    "markAsDelivered": "تعيين كمستلم",
+    "cancel": "إلغاء",
+    "back": "العودة للقائمة",
+    "statusNoticeDraft": "حالة مسودة: يمكنك تعديل جميع حقول الطلب وحفظها أو إرسالها.",
+    "statusNoticeSubmitted": "حالة تم الإرسال: يُسمح فقط بتعديل السبب، والتاريخ، والكمية.",
+    "statusNoticeApproved": "حالة معتمد: يُسمح فقط بتعديل تاريخ الاحتياج أو تأكيد الاستلام.",
+    "statusNoticeReadOnly": "هذا الطلب في حالة ({status}) ومتاح للعرض فقط دون إمكانية التعديل."
+  },
+  "details": {
+    "title": "تفاصيل طلب المعدات",
+    "notFoundTitle": "الطلب غير موجود",
+    "notFoundMessage": "عذراً، لم نتمكن من العثور على طلب المعدات المطلوب، ربما تم حذفه أو أن المعرف غير صحيح.",
+    "backButton": "الرجوع إلى القائمة",
+    "editButton": "تعديل الطلب",
+    "deleteButton": "حذف المسودة",
+    "deliverButton": "تعيين كمستلم"
+  },
+  "items": {
+    "Laptop": "حاسوب محمول",
+    "Monitor": "شاشة عرض",
+    "Mobile": "هاتف جوال",
+    "Headset": "سماعة رأس"
+  },
+  "statuses": {
+    "Draft": "مسودة",
+    "Submitted": "تم الإرسال",
+    "Approved": "معتمد",
+    "Rejected": "مرفوض",
+    "Delivered": "تم التسليم"
+  },
+  "dialog": {
+    "deleteDraftTitle": "تأكيد حذف المسودة",
+    "deleteDraftMessage": "هل أنت متأكد من رغبتك في حذف طلب المسودة ذي الرقم {number} نهائياً؟",
+    "deliverTitle": "تأكيد تسليم المعدة",
+    "deliverMessage": "هل أنت متأكد من رغبتك في تغيير حالة طلب المعدة {number} إلى تم التسليم؟",
+    "confirm": "تأكيد",
+    "cancel": "إلغاء"
+  },
+  "messages": {
+    "savedSuccess": "تم حفظ طلب المعدات بنجاح.",
+    "submittedSuccess": "تم إرسال طلب المعدات بنجاح للموافقة.",
+    "deliveredSuccess": "تم تغيير حالة طلب المعدة إلى تم التسليم بنجاح.",
+    "deletedSuccess": "تم حذف مسودة الطلب رقم {number} بنجاح.",
+    "exportWarningTitle": "تنبيه التصدير",
+    "exportNoRows": "لا توجد صفوف ظاهرة لتصديرها. يرجى تعديل معايير البحث أو التصفية."
+  },
+  "validation": {
+    "required": "حقل {field} مطلوب ولا يمكن تركه فارغاً.",
+    "requestNumberFormat": "يجب أن يبدأ رقم الطلب بالرمز 'EQ-' متبوعاً بأرقام.",
+    "requestNumberUnique": "رقم الطلب هذا مستخدم بالفعل، يرجى اختيار رقم فريد.",
+    "employeeMinLength": "يجب ألا يقل اسم الموظف عن حرفين.",
+    "quantityRange": "يجب أن تكون الكمية عدداً صحيحاً بين 1 و 10.",
+    "costPositive": "يجب أن تكون التكلفة التقديرية أكبر من الصفر.",
+    "costDecimals": "يجب ألا تتجاوز التكلفة التقديرية خانتين عشريتين.",
+    "datePast": "يجب أن يكون تاريخ الاحتياج اليوم أو في تاريخ لاحق.",
+    "reasonMaxLength": "لا يمكن أن يتجاوز سبب الطلب 250 حرفاً."
+  },
+  "auth": {
+    "title": "بوابة الشركة التجريبية",
+    "subtitle": "تسجيل الدخول إلى البوابة المؤسسية",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "admin@company.com",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "تسجيل الدخول",
+    "logout": "تسجيل الخروج",
+    "fillDemo": "تعبئة بيانات الحساب التجريبي",
+    "demoHint": "الحساب التجريبي:",
+    "loginFailed": "فشل تسجيل الدخول",
+    "invalidCredentials": "بيانات الاعتماد غير صحيحة. يرجى التحقق من البريد الإلكتروني وكلمة المرور."
+  },
+  "nav": {
+    "toggleSidebar": "تبديل القائمة الجانبية",
+    "dashboard": "لوحة التحكم",
+    "equipmentRequests": "طلبات المعدات",
+    "createRequest": "إنشاء طلب جديد"
+  }
+}

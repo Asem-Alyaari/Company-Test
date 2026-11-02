@@ -1,0 +1,12 @@
+<div class="empty-state-container" role="status">
+  <div class="empty-state-icon-wrapper">
+    <i [class]="icon()" class="empty-state-icon" aria-hidden="true"></i>
+  </div>
+  <h4 class="empty-state-title">{{ title() }}</h4>
+  @if (message()) {
+    <p class="empty-state-message">{{ message() }}</p>
+  }
+  <div class="empty-state-actions">
+    <ng-content />
+  </div>
+</div>
