@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { ApiService } from '@core';
 import { Employee, EmployeeFormData } from '../models/employee.model';
 
@@ -22,7 +22,45 @@ export class EmployeeService {
   }
 
   getEmployee(id: string): Observable<Employee> {
-    return this.apiService.getById<Employee>(this.endpoint, id);
+    return this.apiService.getById<Employee>(this.endpoint, id).pipe(
+      tap((emp) => {
+        this.employeesSignal.update((existing) => {
+          const idx = existing.findIndex((e) => e.id === emp.id);
+          if (idx >= 0) {
+            const copy = [...existing];
+            copy[idx] = emp;
+            return copy;
+          }
+          return [...existing, emp];
+        });
+      })
+    );
+  }
+
+  searchEmployees(query: string): Observable<Employee[]> {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      return of([]);
+    }
+    return this.apiService.get<Employee[]>(this.endpoint, { q: query }).pipe(
+      map((list) =>
+        list.filter(
+          (emp) =>
+            emp.name.toLowerCase().includes(q) ||
+            emp.jobTitle.toLowerCase().includes(q) ||
+            emp.email.toLowerCase().includes(q)
+        )
+      ),
+      tap((results) => {
+        this.employeesSignal.update((existing) => {
+          const map = new Map(existing.map((e) => [e.id, e]));
+          for (const r of results) {
+            map.set(r.id, r);
+          }
+          return Array.from(map.values());
+        });
+      })
+    );
   }
 
   createEmployee(payload: EmployeeFormData): Observable<Employee> {

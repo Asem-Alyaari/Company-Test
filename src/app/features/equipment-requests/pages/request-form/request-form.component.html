@@ -37,23 +37,41 @@
         />
       </div>
 
-      <!-- Employee Select -->
+      <!-- Employee Search / Filter (AutoComplete) -->
       <div class="field-col">
         <label for="form-employeeId" class="field-label">
           {{ 'form.employeeName' | translate }}
           <span class="required-star">*</span>
         </label>
-        <p-select
+        <p-autocomplete
           id="form-employeeId"
-          formControlName="employeeId"
-          [options]="employeeOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [filter]="true"
-          [placeholder]="'form.selectEmployee' | translate"
-          (onChange)="onEmployeeSelect($event.value)"
+          [ngModel]="selectedEmployee()"
+          [ngModelOptions]="{ standalone: true }"
+          [suggestions]="filteredEmployees()"
+          (completeMethod)="onSearchEmployees($event)"
+          optionLabel="name"
+          [forceSelection]="true"
+          [minLength]="1"
+          [placeholder]="'form.searchEmployeePlaceholder' | translate"
+          [emptyMessage]="'form.noEmployeesFound' | translate"
+          (onSelect)="onEmployeeSelect($event.value)"
+          (onClear)="onEmployeeClear()"
+          [disabled]="requestForm.controls.employeeId.disabled"
           styleClass="w-full"
-        />
+          inputStyleClass="w-full"
+        >
+          <ng-template let-emp #item>
+            <div class="emp-suggestion-item">
+              <span class="emp-name font-medium">{{ emp.name }}</span>
+              <small class="emp-meta">
+                {{ emp.jobTitle }}
+                @if (emp.departmentId) {
+                  <span> • {{ departmentService.getDepartmentName(emp.departmentId) }}</span>
+                }
+              </small>
+            </div>
+          </ng-template>
+        </p-autocomplete>
         <app-form-error
           [control]="requestForm.controls.employeeId"
           [fieldName]="'form.employeeName' | translate"

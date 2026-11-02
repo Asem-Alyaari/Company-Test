@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import {
   AbstractControl,
+  FormsModule,
   NonNullableFormBuilder,
   ReactiveFormsModule,
   ValidationErrors,
@@ -21,6 +22,7 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { Select } from 'primeng/select';
+import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { Button } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 import { LanguageService, NotificationService, TranslatePipe } from '@core';
@@ -34,6 +36,7 @@ import {
 import { EquipmentRequestService } from '../../services/equipment-request.service';
 import { DepartmentService } from '../../../departments/services/department.service';
 import { EmployeeService } from '../../../employees/services/employee.service';
+import { Employee } from '../../../employees/models/employee.model';
 
 function getTodayString(): string {
   const d = new Date();
@@ -89,11 +92,13 @@ function quantityValidator(control: AbstractControl): ValidationErrors | null {
 @Component({
   selector: 'app-request-form',
   imports: [
+    FormsModule,
     ReactiveFormsModule,
     Dialog,
     InputText,
     Textarea,
     Select,
+    AutoComplete,
     Button,
     TranslatePipe,
     FormErrorComponent
@@ -165,13 +170,9 @@ export class RequestFormComponent {
   );
 
   readonly selectedDepartmentName = signal<string>('-');
-
-  readonly employeeOptions = computed(() =>
-    this.employeeService.employees().map((e) => ({
-      label: `${e.name} (${e.jobTitle})`,
-      value: e.id
-    }))
-  );
+  readonly filteredEmployees = signal<Employee[]>([]);
+  readonly selectedEmployee = signal<Employee | null>(null);
+  readonly isSearchingEmployees = signal<boolean>(false);
 
   readonly requestForm = this.fb.group({
     requestNumber: ['', [Validators.required, Validators.pattern(/^EQ-\d+$/)]],
@@ -183,20 +184,40 @@ export class RequestFormComponent {
     reason: ['', [Validators.maxLength(250)]]
   });
 
-  onEmployeeSelect(employeeId: string): void {
-    this.requestForm.controls.employeeId.setValue(employeeId);
-    this.updateSelectedDepartment(employeeId);
+  onSearchEmployees(event: AutoCompleteCompleteEvent): void {
+    const query = event.query?.trim() || '';
+    if (!query) {
+      this.filteredEmployees.set([]);
+      return;
+    }
+
+    this.isSearchingEmployees.set(true);
+    this.employeeService.searchEmployees(query).subscribe({
+      next: (results) => {
+        this.filteredEmployees.set(results);
+        this.isSearchingEmployees.set(false);
+      },
+      error: () => {
+        this.filteredEmployees.set([]);
+        this.isSearchingEmployees.set(false);
+      }
+    });
   }
 
-  private updateSelectedDepartment(employeeId: string): void {
-    const emp = this.employeeService.getEmployeeById(employeeId);
-    if (emp) {
-      this.selectedDepartmentName.set(
-        this.departmentService.getDepartmentName(emp.departmentId)
-      );
-    } else {
-      this.selectedDepartmentName.set('-');
-    }
+  onEmployeeSelect(employee: Employee): void {
+    if (!employee) return;
+    this.selectedEmployee.set(employee);
+    this.requestForm.controls.employeeId.setValue(employee.id);
+    this.selectedDepartmentName.set(
+      this.departmentService.getDepartmentName(employee.departmentId)
+    );
+  }
+
+  onEmployeeClear(): void {
+    this.selectedEmployee.set(null);
+    this.requestForm.controls.employeeId.setValue('');
+    this.selectedDepartmentName.set('-');
+    this.filteredEmployees.set([]);
   }
 
   constructor() {
@@ -222,48 +243,39 @@ export class RequestFormComponent {
   private initCreate(): void {
     this.editingId.set(null);
     this.currentStatus.set('Draft');
+    this.selectedEmployee.set(null);
+    this.filteredEmployees.set([]);
+    this.selectedDepartmentName.set('-');
 
     forkJoin({
       suggestedNumber: this.requestService.generateNextRequestNumber(),
       departments:
         this.departmentService.departments().length > 0
           ? of(this.departmentService.departments())
-          : this.departmentService.loadDepartments(),
-      employees:
-        this.employeeService.employees().length > 0
-          ? of(this.employeeService.employees())
-          : this.employeeService.loadEmployees()
+          : this.departmentService.loadDepartments()
     }).subscribe({
       next: (res) => {
-        const firstEmp = res.employees[0];
-        const defaultEmpId = firstEmp?.id ?? '';
-
         this.requestForm.reset({
           requestNumber: res.suggestedNumber,
-          employeeId: defaultEmpId,
+          employeeId: '',
           item: 'Laptop',
           quantity: 1,
           estimatedCost: 0,
           neededOn: getTodayString(),
           reason: ''
         });
-        this.updateSelectedDepartment(defaultEmpId);
         this.applyFieldPermissions('Draft');
       },
       error: () => {
-        const firstEmp = this.employeeService.employees()[0];
-        const defaultEmpId = firstEmp?.id ?? '';
-
         this.requestForm.reset({
           requestNumber: 'EQ-1001',
-          employeeId: defaultEmpId,
+          employeeId: '',
           item: 'Laptop',
           quantity: 1,
           estimatedCost: 0,
           neededOn: getTodayString(),
           reason: ''
         });
-        this.updateSelectedDepartment(defaultEmpId);
         this.applyFieldPermissions('Draft');
       }
     });
@@ -272,51 +284,52 @@ export class RequestFormComponent {
   private initEdit(req: EquipmentRequest): void {
     this.editingId.set(req.id);
     this.currentStatus.set(req.status);
+    this.filteredEmployees.set([]);
 
-    const loadDeps$ = forkJoin({
-      departments:
-        this.departmentService.departments().length > 0
-          ? of(this.departmentService.departments())
-          : this.departmentService.loadDepartments(),
-      employees:
-        this.employeeService.employees().length > 0
-          ? of(this.employeeService.employees())
-          : this.employeeService.loadEmployees()
+    const loadDeps$ =
+      this.departmentService.departments().length > 0
+        ? of(this.departmentService.departments())
+        : this.departmentService.loadDepartments();
+
+    loadDeps$.subscribe();
+
+    this.requestForm.reset({
+      requestNumber: req.requestNumber,
+      employeeId: req.employeeId,
+      item: req.item,
+      quantity: req.quantity,
+      estimatedCost: req.estimatedCost,
+      neededOn: req.neededOn,
+      reason: req.reason ?? ''
     });
 
-    loadDeps$.subscribe({
-      next: () => {
-        this.requestForm.reset({
-          requestNumber: req.requestNumber,
-          employeeId: req.employeeId,
-          item: req.item,
-          quantity: req.quantity,
-          estimatedCost: req.estimatedCost,
-          neededOn: req.neededOn,
-          reason: req.reason ?? ''
-        });
-        this.updateSelectedDepartment(req.employeeId);
-        this.applyFieldPermissions(req.status);
-      },
-      error: () => {
-        this.requestForm.reset({
-          requestNumber: req.requestNumber,
-          employeeId: req.employeeId,
-          item: req.item,
-          quantity: req.quantity,
-          estimatedCost: req.estimatedCost,
-          neededOn: req.neededOn,
-          reason: req.reason ?? ''
-        });
-        this.updateSelectedDepartment(req.employeeId);
-        this.applyFieldPermissions(req.status);
-      }
-    });
+    if (req.employeeId) {
+      this.employeeService.getEmployee(req.employeeId).subscribe({
+        next: (emp) => {
+          this.selectedEmployee.set(emp);
+          this.selectedDepartmentName.set(
+            this.departmentService.getDepartmentName(emp.departmentId)
+          );
+        },
+        error: () => {
+          this.selectedEmployee.set(null);
+          this.selectedDepartmentName.set('-');
+        }
+      });
+    } else {
+      this.selectedEmployee.set(null);
+      this.selectedDepartmentName.set('-');
+    }
+
+    this.applyFieldPermissions(req.status);
   }
 
   private resetInternalState(): void {
     this.isSaving.set(false);
     this.editingId.set(null);
+    this.selectedEmployee.set(null);
+    this.filteredEmployees.set([]);
+    this.selectedDepartmentName.set('-');
     this.requestForm.reset();
   }
 

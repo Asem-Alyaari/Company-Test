@@ -41,6 +41,8 @@
     "requestNumberHelp": "Must start with EQ- followed by digits (e.g. EQ-1006)",
     "employeeName": "Employee Name",
     "selectEmployee": "Select Employee",
+    "searchEmployeePlaceholder": "Type to search employee (name, title, or email)...",
+    "noEmployeesFound": "No employees found",
     "department": "Department",
     "selectDepartment": "Select Department",
     "item": "Equipment Item",

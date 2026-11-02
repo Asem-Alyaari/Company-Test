@@ -45,33 +45,20 @@ describe('RequestFormComponent - Business Rules', () => {
       getDepartmentName: () => 'Payroll'
     };
 
+    const mockEmployee = {
+      id: 'emp-1',
+      name: 'Mazen Omar',
+      email: 'mazen@company.com',
+      departmentId: 'payroll',
+      jobTitle: 'Developer'
+    };
+
     const mockEmployeeService = {
-      loadEmployees: () =>
-        of([
-          {
-            id: 'emp-1',
-            name: 'Mazen Omar',
-            email: 'mazen@company.com',
-            departmentId: 'payroll',
-            jobTitle: 'Developer'
-          }
-        ]),
-      employees: signal([
-        {
-          id: 'emp-1',
-          name: 'Mazen Omar',
-          email: 'mazen@company.com',
-          departmentId: 'payroll',
-          jobTitle: 'Developer'
-        }
-      ]),
-      getEmployeeById: () => ({
-        id: 'emp-1',
-        name: 'Mazen Omar',
-        email: 'mazen@company.com',
-        departmentId: 'payroll',
-        jobTitle: 'Developer'
-      }),
+      loadEmployees: () => of([mockEmployee]),
+      getEmployee: () => of(mockEmployee),
+      searchEmployees: (q: string) => of(q.toLowerCase().includes('maz') ? [mockEmployee] : []),
+      employees: signal([mockEmployee]),
+      getEmployeeById: () => mockEmployee,
       getEmployeeName: () => 'Mazen Omar'
     };
 
@@ -154,6 +141,39 @@ describe('RequestFormComponent - Business Rules', () => {
 
       // Total form status should be disabled
       expect(component.requestForm.disabled).toBe(true);
+    });
+  });
+
+  describe('Rule 3: On-Demand Employee Search and Filtering', () => {
+    it('should search employees on input and not load all employees into the list upfront', () => {
+      // Perform search
+      component.onSearchEmployees({ query: 'maz' } as any);
+      expect(component.filteredEmployees().length).toBe(1);
+      expect(component.filteredEmployees()[0].name).toBe('Mazen Omar');
+
+      // Empty query returns empty list
+      component.onSearchEmployees({ query: '' } as any);
+      expect(component.filteredEmployees().length).toBe(0);
+    });
+
+    it('should set employeeId and department on employee select and clear on onEmployeeClear', () => {
+      const emp = {
+        id: 'emp-1',
+        name: 'Mazen Omar',
+        email: 'mazen@company.com',
+        departmentId: 'payroll',
+        jobTitle: 'Developer'
+      };
+
+      component.onEmployeeSelect(emp);
+      expect(component.selectedEmployee()?.id).toBe('emp-1');
+      expect(component.requestForm.controls.employeeId.value).toBe('emp-1');
+      expect(component.selectedDepartmentName()).toBe('Payroll');
+
+      component.onEmployeeClear();
+      expect(component.selectedEmployee()).toBeNull();
+      expect(component.requestForm.controls.employeeId.value).toBe('');
+      expect(component.selectedDepartmentName()).toBe('-');
     });
   });
 });

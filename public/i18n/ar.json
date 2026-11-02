@@ -41,6 +41,8 @@
     "requestNumberHelp": "يجب أن يبدأ بـ EQ- متبوعاً بأرقام (مثال: EQ-1006)",
     "employeeName": "اسم الموظف",
     "selectEmployee": "اختر الموظف",
+    "searchEmployeePlaceholder": "ابحث عن موظف بالاسم، المسمى، أو البريد...",
+    "noEmployeesFound": "لم يتم العثور على موظف",
     "department": "القسم",
     "selectDepartment": "اختر القسم",
     "item": "نوع المعدة",

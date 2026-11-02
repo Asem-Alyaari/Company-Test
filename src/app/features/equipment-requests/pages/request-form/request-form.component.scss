@@ -108,6 +108,23 @@
         margin-top: 0.15rem;
       }
 
+      .emp-suggestion-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+
+        .emp-name {
+          font-weight: 600;
+          color: var(--p-text-color, #1e293b);
+          font-size: 0.875rem;
+        }
+
+        .emp-meta {
+          color: var(--p-text-muted-color, #64748b);
+          font-size: 0.775rem;
+        }
+      }
+
       .dept-display-field {
         display: flex;
         align-items: center;
