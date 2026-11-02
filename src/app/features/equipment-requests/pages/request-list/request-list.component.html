@@ -140,16 +140,9 @@
 
         <ng-template #body let-request>
           <tr class="table-row">
-            <!-- Request Number (Clickable Link) -->
+            <!-- Request Number -->
             <td class="col-num font-mono">
-              <button
-                type="button"
-                class="request-link-btn font-mono"
-                (click)="openEditDialog(request, $event)"
-                title="View / Edit Request"
-              >
-                {{ request.requestNumber }}
-              </button>
+              {{ request.requestNumber }}
             </td>
 
             <!-- Employee -->
@@ -199,16 +192,6 @@
             <!-- Actions -->
             <td class="col-actions">
               <div class="row-actions">
-                <p-button
-                  icon="pi pi-eye"
-                  [rounded]="true"
-                  [text]="true"
-                  severity="secondary"
-                  size="small"
-                  (onClick)="openEditDialog(request, $event)"
-                  ariaLabel="View Details"
-                />
-
                 @if (request.status === 'Draft' || request.status === 'Submitted' || request.status === 'Approved') {
                   <p-button
                     icon="pi pi-pencil"
