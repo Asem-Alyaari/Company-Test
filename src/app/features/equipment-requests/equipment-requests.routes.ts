@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { RequestListComponent } from './pages/request-list/request-list.component';
-import { RequestDetailsComponent } from './pages/request-details/request-details.component';
 
 export const EQUIPMENT_REQUESTS_ROUTES: Routes = [
   {
@@ -14,7 +13,8 @@ export const EQUIPMENT_REQUESTS_ROUTES: Routes = [
   },
   {
     path: ':id',
-    component: RequestDetailsComponent
+    component: RequestListComponent,
+    data: { openView: true }
   },
   {
     path: ':id/edit',

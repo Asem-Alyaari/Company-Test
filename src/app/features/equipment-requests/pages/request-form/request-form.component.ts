@@ -133,9 +133,13 @@ export class RequestFormComponent {
   readonly dialogTitle = computed(() => {
     const isEdit = !this.isAddMode();
     const reqNum = this.requestForm.controls.requestNumber.value;
-    return isEdit
-      ? this.languageService.translate('form.editTitle', { number: reqNum })
-      : this.languageService.translate('form.createTitle');
+    if (!isEdit) {
+      return this.languageService.translate('form.createTitle');
+    }
+    if (this.isReadOnly()) {
+      return `${this.languageService.translate('details.title')} - ${reqNum}`;
+    }
+    return this.languageService.translate('form.editTitle', { number: reqNum });
   });
 
   readonly statusNotice = computed(() => {

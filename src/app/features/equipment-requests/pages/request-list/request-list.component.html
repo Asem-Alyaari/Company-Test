@@ -142,13 +142,14 @@
           <tr class="table-row">
             <!-- Request Number (Clickable Link) -->
             <td class="col-num font-mono">
-              <a
-                [routerLink]="['/equipment-requests', request.id]"
-                class="request-link"
-                title="View Details"
+              <button
+                type="button"
+                class="request-link-btn font-mono"
+                (click)="openEditDialog(request, $event)"
+                title="View / Edit Request"
               >
                 {{ request.requestNumber }}
-              </a>
+              </button>
             </td>
 
             <!-- Employee -->
@@ -204,7 +205,7 @@
                   [text]="true"
                   severity="secondary"
                   size="small"
-                  [routerLink]="['/equipment-requests', request.id]"
+                  (onClick)="openEditDialog(request, $event)"
                   ariaLabel="View Details"
                 />
 

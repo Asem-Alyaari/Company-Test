@@ -122,15 +122,20 @@ export class RequestListComponent implements OnInit {
       this.route.snapshot.queryParamMap.get('openCreate') === 'true' ||
       this.router.url.includes('/equipment-requests/new');
 
+    const idParam = this.route.snapshot.paramMap.get('id');
     if (isNewRoute) {
       this.openCreateDialog();
-    } else if (this.route.snapshot.data['openEdit'] === true || this.router.url.includes('/edit')) {
-      const editId = this.route.snapshot.paramMap.get('id');
-      if (editId) {
-        this.requestService.getById(editId).subscribe({
-          next: (req) => this.openEditDialog(req)
-        });
-      }
+    } else if (idParam && idParam !== 'new') {
+      this.requestService.getById(idParam).subscribe({
+        next: (req) => this.openEditDialog(req),
+        error: () => {
+          this.notificationService.error(
+            this.languageService.translate('details.notFoundTitle'),
+            this.languageService.translate('details.notFoundMessage')
+          );
+          void this.router.navigate(['/equipment-requests'], { replaceUrl: true });
+        }
+      });
     }
 
     this.router.events
@@ -205,13 +210,13 @@ export class RequestListComponent implements OnInit {
 
   onFormSaved(_saved: EquipmentRequest): void {
     this.loadData();
-    if (this.router.url.includes('/new') || this.router.url.includes('/edit')) {
+    if (this.router.url !== '/equipment-requests') {
       void this.router.navigate(['/equipment-requests'], { replaceUrl: true });
     }
   }
 
   onFormClosed(): void {
-    if (this.router.url.includes('/new') || this.router.url.includes('/edit')) {
+    if (this.router.url !== '/equipment-requests') {
       void this.router.navigate(['/equipment-requests'], { replaceUrl: true });
     }
   }
@@ -260,7 +265,9 @@ export class RequestListComponent implements OnInit {
   }
 
   navigateToDetails(id: string): void {
-    void this.router.navigate(['/equipment-requests', id]);
+    this.requestService.getById(id).subscribe({
+      next: (req) => this.openEditDialog(req)
+    });
   }
 
   exportCsv(): void {
