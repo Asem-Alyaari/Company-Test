@@ -100,15 +100,15 @@ export class RequestListComponent implements OnInit {
     const statusFilter = this.selectedStatus();
 
     return all.filter((req) => {
-      const empName = this.getEmployeeDisplayName(req).toLowerCase();
+      const emp = this.employeeService.getEmployeeById(req.employeeId);
+      const empName = emp ? emp.name.toLowerCase() : '';
       const matchesSearch =
         !query ||
         req.requestNumber.toLowerCase().includes(query) ||
         empName.includes(query) ||
-        req.employeeName.toLowerCase().includes(query) ||
         req.item.toLowerCase().includes(query);
 
-      const matchesDept = !deptFilter || req.departmentId === deptFilter;
+      const matchesDept = !deptFilter || (emp && emp.departmentId === deptFilter);
       const matchesStatus = !statusFilter || req.status === statusFilter;
 
       return matchesSearch && matchesDept && matchesStatus;
@@ -178,13 +178,13 @@ export class RequestListComponent implements OnInit {
   }
 
   getEmployeeDisplayName(request: EquipmentRequest): string {
-    if (request.employeeId) {
-      const name = this.employeeService.getEmployeeName(request.employeeId);
-      if (name && name !== '-') {
-        return name;
-      }
-    }
-    return request.employeeName || '-';
+    return this.employeeService.getEmployeeName(request.employeeId);
+  }
+
+  getDepartmentNameByEmployee(employeeId: string): string {
+    const emp = this.employeeService.getEmployeeById(employeeId);
+    if (!emp) return '-';
+    return this.departmentService.getDepartmentName(emp.departmentId);
   }
 
   onSearchCommit(event: Event): void {
@@ -311,7 +311,7 @@ export class RequestListComponent implements OnInit {
     csvRows.push(headers.map((h) => this.escapeCsv(h)).join(','));
 
     for (const row of visibleRows) {
-      const deptName = this.departmentService.getDepartmentName(row.departmentId);
+      const deptName = this.getDepartmentNameByEmployee(row.employeeId);
       const empName = this.getEmployeeDisplayName(row);
       const itemTranslated = this.languageService.translate(`items.${row.item}`);
       const statusTranslated = this.languageService.translate(`statuses.${row.status}`);

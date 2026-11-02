@@ -20,8 +20,7 @@ describe('RequestFormComponent - Business Rules', () => {
   const mockDeliveredRequest: EquipmentRequest = {
     id: '5',
     requestNumber: 'EQ-1005',
-    employeeName: 'Mazen Omar',
-    departmentId: 'payroll',
+    employeeId: 'emp-1',
     item: 'Laptop',
     quantity: 1,
     estimatedCost: 3200,
@@ -147,8 +146,6 @@ describe('RequestFormComponent - Business Rules', () => {
       // Verify all form controls are disabled
       expect(component.requestForm.controls.requestNumber.disabled).toBe(true);
       expect(component.requestForm.controls.employeeId.disabled).toBe(true);
-      expect(component.requestForm.controls.employeeName.disabled).toBe(true);
-      expect(component.requestForm.controls.departmentId.disabled).toBe(true);
       expect(component.requestForm.controls.item.disabled).toBe(true);
       expect(component.requestForm.controls.quantity.disabled).toBe(true);
       expect(component.requestForm.controls.estimatedCost.disabled).toBe(true);

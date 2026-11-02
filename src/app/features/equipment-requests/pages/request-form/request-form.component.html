@@ -60,26 +60,15 @@
         />
       </div>
 
-      <!-- Department -->
+      <!-- Department (Read-only dynamic display based on selected employee) -->
       <div class="field-col">
-        <label for="form-departmentId" class="field-label">
+        <label class="field-label">
           {{ 'form.department' | translate }}
-          <span class="required-star">*</span>
         </label>
-        <p-select
-          id="form-departmentId"
-          formControlName="departmentId"
-          [options]="departmentOptions()"
-          optionLabel="label"
-          optionValue="value"
-          [filter]="true"
-          [placeholder]="'form.selectDepartment' | translate"
-          styleClass="w-full"
-        />
-        <app-form-error
-          [control]="requestForm.controls.departmentId"
-          [fieldName]="'form.department' | translate"
-        />
+        <div class="dept-display-field">
+          <i class="pi pi-building" aria-hidden="true"></i>
+          <span>{{ selectedDepartmentName() }}</span>
+        </div>
       </div>
 
       <!-- Equipment Item -->

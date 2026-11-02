@@ -9,9 +9,7 @@ export const EQUIPMENT_STATUSES: readonly EquipmentStatus[] = ['Draft', 'Submitt
 export interface EquipmentRequest {
   id: string;
   requestNumber: string;
-  employeeId?: string;
-  employeeName: string;
-  departmentId: string;
+  employeeId: string;
   item: EquipmentItem;
   quantity: number;
   estimatedCost: number;
@@ -23,9 +21,7 @@ export interface EquipmentRequest {
 
 export interface EquipmentRequestFormData {
   requestNumber: string;
-  employeeId?: string;
-  employeeName: string;
-  departmentId: string;
+  employeeId: string;
   item: EquipmentItem;
   quantity: number;
   estimatedCost: number;

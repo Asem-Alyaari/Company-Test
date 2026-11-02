@@ -20,8 +20,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     {
       id: '1',
       requestNumber: 'EQ-1001',
-      employeeName: 'Sara Ali',
-      departmentId: 'payroll',
+      employeeId: '1',
       item: 'Laptop',
       quantity: 1,
       estimatedCost: 2500.5,
@@ -33,8 +32,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     {
       id: '2',
       requestNumber: 'EQ-1002',
-      employeeName: 'Omar Nasser',
-      departmentId: 'hr',
+      employeeId: '2',
       item: 'Monitor',
       quantity: 2,
       estimatedCost: 800,
@@ -46,8 +44,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     {
       id: '3',
       requestNumber: 'EQ-1003',
-      employeeName: 'Lina Hassan',
-      departmentId: 'finance',
+      employeeId: '3',
       item: 'Mobile',
       quantity: 1,
       estimatedCost: 1500,
@@ -59,8 +56,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     {
       id: '4',
       requestNumber: 'EQ-1004',
-      employeeName: 'Huda Saleh',
-      departmentId: 'it',
+      employeeId: '4',
       item: 'Headset',
       quantity: 3,
       estimatedCost: 450.25,
@@ -72,8 +68,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     {
       id: '5',
       requestNumber: 'EQ-1005',
-      employeeName: 'Mazen Omar',
-      departmentId: 'payroll',
+      employeeId: '5',
       item: 'Laptop',
       quantity: 1,
       estimatedCost: 3200,
@@ -85,8 +80,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     {
       id: '6',
       requestNumber: 'EQ-1006',
-      employeeName: 'Ali Khalid',
-      departmentId: 'it',
+      employeeId: '6',
       item: 'Monitor',
       quantity: 1,
       estimatedCost: 950,
@@ -126,34 +120,20 @@ describe('RequestListComponent - Pagination & Features', () => {
       of({ id, ...payload } as EquipmentRequest)
   };
 
+  const mockEmployeesList = [
+    { id: '1', name: 'Sara Ali', email: 'sara@company.com', departmentId: 'payroll', jobTitle: 'Specialist' },
+    { id: '2', name: 'Omar Nasser', email: 'omar@company.com', departmentId: 'hr', jobTitle: 'Coordinator' },
+    { id: '3', name: 'Lina Hassan', email: 'lina@company.com', departmentId: 'finance', jobTitle: 'Analyst' },
+    { id: '4', name: 'Huda Saleh', email: 'huda@company.com', departmentId: 'it', jobTitle: 'DevOps' },
+    { id: '5', name: 'Mazen Omar', email: 'mazen@company.com', departmentId: 'payroll', jobTitle: 'Accountant' },
+    { id: '6', name: 'Ali Khalid', email: 'ali@company.com', departmentId: 'it', jobTitle: 'Developer' }
+  ];
+
   const mockEmployeeService = {
-    employees: () => [
-      {
-        id: '1',
-        name: 'Sara Ali',
-        email: 'sara@company.com',
-        departmentId: 'payroll',
-        jobTitle: 'Specialist'
-      }
-    ],
-    loadEmployees: () =>
-      of([
-        {
-          id: '1',
-          name: 'Sara Ali',
-          email: 'sara@company.com',
-          departmentId: 'payroll',
-          jobTitle: 'Specialist'
-        }
-      ]),
-    getEmployeeById: (id: string) => ({
-      id,
-      name: 'Sara Ali',
-      email: 'sara@company.com',
-      departmentId: 'payroll',
-      jobTitle: 'Specialist'
-    }),
-    getEmployeeName: (id: string) => 'Sara Ali'
+    employees: () => mockEmployeesList,
+    loadEmployees: () => of(mockEmployeesList),
+    getEmployeeById: (id: string) => mockEmployeesList.find((e) => e.id === id),
+    getEmployeeName: (id: string) => mockEmployeesList.find((e) => e.id === id)?.name ?? '-'
   };
 
   beforeEach(async () => {

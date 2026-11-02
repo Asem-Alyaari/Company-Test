@@ -164,12 +164,7 @@ export class RequestFormComponent {
     }))
   );
 
-  readonly departmentOptions = computed(() =>
-    this.departmentService.departments().map((d) => ({
-      label: `${d.name} (${d.code})`,
-      value: d.id
-    }))
-  );
+  readonly selectedDepartmentName = signal<string>('-');
 
   readonly employeeOptions = computed(() =>
     this.employeeService.employees().map((e) => ({
@@ -181,8 +176,6 @@ export class RequestFormComponent {
   readonly requestForm = this.fb.group({
     requestNumber: ['', [Validators.required, Validators.pattern(/^EQ-\d+$/)]],
     employeeId: ['', [Validators.required]],
-    employeeName: ['', [Validators.required, Validators.minLength(2)]],
-    departmentId: ['', [Validators.required]],
     item: ['Laptop' as EquipmentItem, [Validators.required]],
     quantity: [1, [Validators.required, quantityValidator]],
     estimatedCost: [0, [Validators.required, costValidator]],
@@ -191,13 +184,18 @@ export class RequestFormComponent {
   });
 
   onEmployeeSelect(employeeId: string): void {
+    this.requestForm.controls.employeeId.setValue(employeeId);
+    this.updateSelectedDepartment(employeeId);
+  }
+
+  private updateSelectedDepartment(employeeId: string): void {
     const emp = this.employeeService.getEmployeeById(employeeId);
     if (emp) {
-      this.requestForm.patchValue({
-        employeeId: emp.id,
-        employeeName: emp.name,
-        departmentId: emp.departmentId
-      });
+      this.selectedDepartmentName.set(
+        this.departmentService.getDepartmentName(emp.departmentId)
+      );
+    } else {
+      this.selectedDepartmentName.set('-');
     }
   }
 
@@ -239,40 +237,33 @@ export class RequestFormComponent {
       next: (res) => {
         const firstEmp = res.employees[0];
         const defaultEmpId = firstEmp?.id ?? '';
-        const defaultEmpName = firstEmp?.name ?? '';
-        const defaultDeptId = firstEmp?.departmentId ?? res.departments[0]?.id ?? '';
 
         this.requestForm.reset({
           requestNumber: res.suggestedNumber,
           employeeId: defaultEmpId,
-          employeeName: defaultEmpName,
-          departmentId: defaultDeptId,
           item: 'Laptop',
           quantity: 1,
           estimatedCost: 0,
           neededOn: getTodayString(),
           reason: ''
         });
+        this.updateSelectedDepartment(defaultEmpId);
         this.applyFieldPermissions('Draft');
       },
       error: () => {
         const firstEmp = this.employeeService.employees()[0];
         const defaultEmpId = firstEmp?.id ?? '';
-        const defaultEmpName = firstEmp?.name ?? '';
-        const defaultDeptId =
-          firstEmp?.departmentId ?? this.departmentService.departments()[0]?.id ?? '';
 
         this.requestForm.reset({
           requestNumber: 'EQ-1001',
           employeeId: defaultEmpId,
-          employeeName: defaultEmpName,
-          departmentId: defaultDeptId,
           item: 'Laptop',
           quantity: 1,
           estimatedCost: 0,
           neededOn: getTodayString(),
           reason: ''
         });
+        this.updateSelectedDepartment(defaultEmpId);
         this.applyFieldPermissions('Draft');
       }
     });
@@ -294,44 +285,30 @@ export class RequestFormComponent {
     });
 
     loadDeps$.subscribe({
-      next: (res) => {
-        let matchedEmpId = req.employeeId ?? '';
-        if (!matchedEmpId && req.employeeName) {
-          const match = res.employees.find(
-            (e) => e.name.toLowerCase() === req.employeeName.toLowerCase()
-          );
-          if (match) {
-            matchedEmpId = match.id;
-          }
-        }
-
+      next: () => {
         this.requestForm.reset({
           requestNumber: req.requestNumber,
-          employeeId: matchedEmpId,
-          employeeName: req.employeeName,
-          departmentId: req.departmentId,
+          employeeId: req.employeeId,
           item: req.item,
           quantity: req.quantity,
           estimatedCost: req.estimatedCost,
           neededOn: req.neededOn,
           reason: req.reason ?? ''
         });
-
+        this.updateSelectedDepartment(req.employeeId);
         this.applyFieldPermissions(req.status);
       },
       error: () => {
         this.requestForm.reset({
           requestNumber: req.requestNumber,
-          employeeId: req.employeeId ?? '',
-          employeeName: req.employeeName,
-          departmentId: req.departmentId,
+          employeeId: req.employeeId,
           item: req.item,
           quantity: req.quantity,
           estimatedCost: req.estimatedCost,
           neededOn: req.neededOn,
           reason: req.reason ?? ''
         });
-
+        this.updateSelectedDepartment(req.employeeId);
         this.applyFieldPermissions(req.status);
       }
     });
@@ -354,8 +331,6 @@ export class RequestFormComponent {
       case 'Submitted':
         controls.requestNumber.disable();
         controls.employeeId.disable();
-        controls.employeeName.disable();
-        controls.departmentId.disable();
         controls.item.disable();
         controls.estimatedCost.disable();
         break;
@@ -363,8 +338,6 @@ export class RequestFormComponent {
       case 'Approved':
         controls.requestNumber.disable();
         controls.employeeId.disable();
-        controls.employeeName.disable();
-        controls.departmentId.disable();
         controls.item.disable();
         controls.quantity.disable();
         controls.estimatedCost.disable();
@@ -429,16 +402,9 @@ export class RequestFormComponent {
           return;
         }
 
-        const empName =
-          raw.employeeName.trim() ||
-          this.employeeService.getEmployeeName(raw.employeeId) ||
-          '';
-
         const payload: Omit<EquipmentRequest, 'id' | 'createdAt'> = {
           requestNumber: raw.requestNumber.trim(),
           employeeId: raw.employeeId,
-          employeeName: empName,
-          departmentId: raw.departmentId,
           item: raw.item,
           quantity: Number(raw.quantity),
           estimatedCost: Number(raw.estimatedCost),

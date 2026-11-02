@@ -107,6 +107,24 @@
         text-align: end;
         margin-top: 0.15rem;
       }
+
+      .dept-display-field {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--p-content-hover-background, #f8fafc);
+        border: 1px solid var(--p-content-border-color, #e2e8f0);
+        border-radius: 6px;
+        color: var(--p-text-color, #334155);
+        font-weight: 500;
+        font-size: 0.875rem;
+        min-height: 2.5rem;
+
+        i {
+          color: var(--p-primary-500, #3b82f6);
+        }
+      }
     }
   }
 

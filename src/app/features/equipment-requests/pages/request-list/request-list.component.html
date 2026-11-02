@@ -150,10 +150,10 @@
               {{ getEmployeeDisplayName(request) }}
             </td>
 
-            <!-- Department (Shows name, not id) -->
+            <!-- Department (obtained dynamically from the employee's department) -->
             <td class="col-dept">
               <span class="dept-pill">
-                {{ departmentService.getDepartmentName(request.departmentId) }}
+                {{ getDepartmentNameByEmployee(request.employeeId) }}
               </span>
             </td>
 
