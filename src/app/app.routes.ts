@@ -23,6 +23,15 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'departments',
+    canActivate: [authGuard],
+    canMatch: [authMatchGuard],
+    loadChildren: () =>
+      import('./features/departments/departments.routes').then(
+        (m) => m.DEPARTMENTS_ROUTES
+      )
+  },
+  {
     path: '**',
     redirectTo: 'equipment-requests'
   }

@@ -1,7 +1,4 @@
-export interface Department {
-  id: string;
-  name: string;
-}
+export type { Department } from '../../departments/models/department.model';
 
 export type EquipmentItem = 'Laptop' | 'Monitor' | 'Mobile' | 'Headset';
 export type EquipmentStatus = 'Draft' | 'Submitted' | 'Approved' | 'Rejected' | 'Delivered';

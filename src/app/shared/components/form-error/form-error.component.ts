@@ -51,8 +51,14 @@ export class FormErrorComponent {
     if (errors['pattern']) {
       return `${name} format is invalid.`;
     }
+    if (typeof errors['message'] === 'string') {
+      return errors['message'];
+    }
     if (typeof errors['custom'] === 'string') {
       return errors['custom'];
+    }
+    if (errors['uniqueCode'] || errors['uniqueName'] || errors['unique']) {
+      return `${name} already exists. Please enter a unique ${name.toLowerCase()}.`;
     }
 
     return `${name} is invalid.`;

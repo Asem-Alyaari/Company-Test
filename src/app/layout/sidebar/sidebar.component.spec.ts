@@ -59,9 +59,10 @@ describe('SidebarComponent', () => {
     expect(component.drawerPosition()).toBe('left');
   });
 
-  it('should include equipment requests routes in navItems', () => {
+  it('should include equipment requests and departments routes in navItems', () => {
     const items = component.navItems();
     expect(items.some((i) => i.routerLink === '/equipment-requests')).toBe(true);
+    expect(items.some((i) => i.routerLink === '/departments')).toBe(true);
     expect(items.some((i) => i.routerLink === '/equipment-requests/new')).toBe(true);
   });
 });

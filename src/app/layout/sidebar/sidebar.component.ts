@@ -48,6 +48,11 @@ export class SidebarComponent {
       exact: true
     },
     {
+      labelKey: 'nav.departments',
+      icon: 'pi pi-building',
+      routerLink: '/departments'
+    },
+    {
       labelKey: 'nav.createRequest',
       icon: 'pi pi-plus-circle',
       routerLink: '/equipment-requests/new'

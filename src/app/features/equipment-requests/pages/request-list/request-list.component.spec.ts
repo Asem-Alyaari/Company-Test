@@ -98,17 +98,17 @@ describe('RequestListComponent - Pagination & Features', () => {
 
   const mockDepartmentService = {
     departments: () => [
-      { id: 'payroll', name: 'Payroll' },
-      { id: 'hr', name: 'HR' },
-      { id: 'finance', name: 'Finance' },
-      { id: 'it', name: 'IT' }
+      { id: 'payroll', code: 'PAY', name: 'Payroll' },
+      { id: 'hr', code: 'HR', name: 'HR' },
+      { id: 'finance', code: 'FIN', name: 'Finance' },
+      { id: 'it', code: 'IT', name: 'IT' }
     ],
     loadDepartments: () =>
       of([
-        { id: 'payroll', name: 'Payroll' },
-        { id: 'hr', name: 'HR' },
-        { id: 'finance', name: 'Finance' },
-        { id: 'it', name: 'IT' }
+        { id: 'payroll', code: 'PAY', name: 'Payroll' },
+        { id: 'hr', code: 'HR', name: 'HR' },
+        { id: 'finance', code: 'FIN', name: 'Finance' },
+        { id: 'it', code: 'IT', name: 'IT' }
       ]),
     getDepartmentName: (id: string) => id.toUpperCase()
   };

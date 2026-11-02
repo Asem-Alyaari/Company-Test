@@ -40,8 +40,8 @@ describe('RequestFormComponent - Business Rules', () => {
     };
 
     mockDepartmentService = {
-      loadDepartments: () => of([{ id: 'payroll', name: 'Payroll' }]),
-      departments: signal([{ id: 'payroll', name: 'Payroll' }]),
+      loadDepartments: () => of([{ id: 'payroll', code: 'PAY', name: 'Payroll' }]),
+      departments: signal([{ id: 'payroll', code: 'PAY', name: 'Payroll' }]),
       getDepartmentName: () => 'Payroll'
     };
 

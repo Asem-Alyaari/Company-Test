@@ -10,19 +10,23 @@
   ],
   "departments": [
     {
-      "id": "payroll",
+      "id": "1",
+      "code": "PAY",
       "name": "Payroll"
     },
     {
-      "id": "hr",
+      "id": "2",
+      "code": "HR",
       "name": "HR"
     },
     {
-      "id": "finance",
+      "id": "3",
+      "code": "FIN",
       "name": "Finance"
     },
     {
-      "id": "it",
+      "id": "4",
+      "code": "IT",
       "name": "IT"
     }
   ],
@@ -30,13 +34,13 @@
     {
       "id": "1",
       "requestNumber": "EQ-1001",
-      "employeeName": "Sara Ali5",
-      "departmentId": "payroll",
+      "employeeName": "Sara Ali",
+      "departmentId": "1",
       "item": "Laptop",
-      "quantity": 5,
+      "quantity": 1,
       "estimatedCost": 2500.5,
       "neededOn": "2026-11-15",
-      "status": "Submitted",
+      "status": "Draft",
       "reason": "Replacement for a damaged device",
       "createdAt": "2026-11-01T08:00:00Z"
     },
@@ -44,7 +48,7 @@
       "id": "2",
       "requestNumber": "EQ-1002",
       "employeeName": "Omar Nasser",
-      "departmentId": "hr",
+      "departmentId": "2",
       "item": "Monitor",
       "quantity": 2,
       "estimatedCost": 800,
@@ -57,7 +61,7 @@
       "id": "3",
       "requestNumber": "EQ-1003",
       "employeeName": "Lina Hassan",
-      "departmentId": "finance",
+      "departmentId": "3",
       "item": "Mobile",
       "quantity": 1,
       "estimatedCost": 1500,
@@ -70,7 +74,7 @@
       "id": "4",
       "requestNumber": "EQ-1004",
       "employeeName": "Huda Saleh",
-      "departmentId": "it",
+      "departmentId": "4",
       "item": "Headset",
       "quantity": 3,
       "estimatedCost": 450.25,
@@ -83,7 +87,7 @@
       "id": "5",
       "requestNumber": "EQ-1005",
       "employeeName": "Mazen Omar",
-      "departmentId": "payroll",
+      "departmentId": "1",
       "item": "Laptop",
       "quantity": 1,
       "estimatedCost": 3200,
@@ -91,45 +95,6 @@
       "status": "Delivered",
       "reason": "New joiner",
       "createdAt": "2026-10-15T07:45:00Z"
-    },
-    {
-      "requestNumber": "EQ-1006",
-      "employeeName": "عاصم اليعري",
-      "departmentId": "it",
-      "item": "Headset",
-      "quantity": 1,
-      "estimatedCost": 5000000,
-      "neededOn": "2026-11-02",
-      "reason": "ش",
-      "status": "Submitted",
-      "createdAt": "2026-11-02T07:29:31.941Z",
-      "id": "Y5AK5Kxupko"
-    },
-    {
-      "requestNumber": "EQ-1007",
-      "employeeName": "ضض",
-      "departmentId": "payroll",
-      "item": "Laptop",
-      "quantity": 1,
-      "estimatedCost": 500,
-      "neededOn": "2026-11-02",
-      "reason": "",
-      "status": "Submitted",
-      "createdAt": "2026-11-02T07:31:55.919Z",
-      "id": "D66linNyt8E"
-    },
-    {
-      "requestNumber": "EQ-1008",
-      "employeeName": "عاصم اليعري",
-      "departmentId": "finance",
-      "item": "Laptop",
-      "quantity": 1,
-      "estimatedCost": 650000,
-      "neededOn": "2026-11-02",
-      "reason": "س",
-      "status": "Submitted",
-      "createdAt": "2026-11-02T07:33:34.600Z",
-      "id": "Kogrk-1wteM"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
