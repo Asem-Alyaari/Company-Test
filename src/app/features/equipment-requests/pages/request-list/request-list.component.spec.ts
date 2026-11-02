@@ -140,7 +140,7 @@ describe('RequestListComponent - Pagination & Features', () => {
     await TestBed.configureTestingModule({
       imports: [RequestListComponent],
       providers: [
-        provideRouter([]),
+        provideRouter([{ path: 'equipment-requests', component: RequestListComponent }]),
         provideHttpClient(),
         provideNoopAnimations(),
         MessageService,

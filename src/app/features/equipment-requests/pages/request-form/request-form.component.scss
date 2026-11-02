@@ -76,6 +76,21 @@
         }
       }
 
+      p-autocomplete {
+        width: 100%;
+        display: block;
+      }
+
+      .p-autocomplete {
+        width: 100%;
+        display: flex;
+
+        .p-autocomplete-input {
+          width: 100%;
+          flex: 1 1 auto;
+        }
+      }
+
       .field-label {
         font-size: 0.875rem;
         font-weight: 600;

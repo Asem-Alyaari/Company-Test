@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
 import { LanguageService, NotificationService } from '@core';
 import { EmployeeListComponent } from './employee-list.component';
 import { EmployeeService } from '../../services/employee.service';
@@ -186,11 +186,11 @@ describe('EmployeeListComponent', () => {
 
     component.onSave();
     expect(component.isDialogVisible()).toBe(false);
-    expect(component.employeeService.employees().length).toBe(4);
+    expect(mockEmployeeService.employees().length).toBe(4);
   });
 
   it('should request confirmation and delete employee upon acceptance', () => {
-    spyOn(confirmationService, 'confirm').and.callFake((options: any) => {
+    vi.spyOn(confirmationService, 'confirm').mockImplementation((options: Confirmation) => {
       if (options.accept) {
         options.accept();
       }
@@ -201,6 +201,6 @@ describe('EmployeeListComponent', () => {
     component.deleteEmployee(target);
 
     expect(confirmationService.confirm).toHaveBeenCalled();
-    expect(component.employeeService.employees().some((e) => e.id === target.id)).toBe(false);
+    expect(mockEmployeeService.employees().some((e) => e.id === target.id)).toBe(false);
   });
 });

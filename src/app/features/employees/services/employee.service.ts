@@ -39,26 +39,20 @@ export class EmployeeService {
 
   searchEmployees(query: string): Observable<Employee[]> {
     const q = query.trim().toLowerCase();
-    if (!q) {
-      return of([]);
-    }
-    return this.apiService.get<Employee[]>(this.endpoint, { q: query }).pipe(
-      map((list) =>
-        list.filter(
+    const cached = this.employeesSignal();
+    const source$ = cached.length > 0 ? of(cached) : this.loadEmployees();
+
+    return source$.pipe(
+      map((list) => {
+        if (!q) {
+          return [];
+        }
+        return list.filter(
           (emp) =>
             emp.name.toLowerCase().includes(q) ||
             emp.jobTitle.toLowerCase().includes(q) ||
-            emp.email.toLowerCase().includes(q)
-        )
-      ),
-      tap((results) => {
-        this.employeesSignal.update((existing) => {
-          const map = new Map(existing.map((e) => [e.id, e]));
-          for (const r of results) {
-            map.set(r.id, r);
-          }
-          return Array.from(map.values());
-        });
+            (emp.email && emp.email.toLowerCase().includes(q))
+        );
       })
     );
   }

@@ -22,7 +22,7 @@ import { Dialog } from 'primeng/dialog';
 import { InputText } from 'primeng/inputtext';
 import { Textarea } from 'primeng/textarea';
 import { Select } from 'primeng/select';
-import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
+import { AutoComplete, AutoCompleteCompleteEvent, AutoCompleteSelectEvent } from 'primeng/autocomplete';
 import { Button } from 'primeng/button';
 import { ConfirmationService } from 'primeng/api';
 import { LanguageService, NotificationService, TranslatePipe } from '@core';
@@ -194,7 +194,7 @@ export class RequestFormComponent {
     this.isSearchingEmployees.set(true);
     this.employeeService.searchEmployees(query).subscribe({
       next: (results) => {
-        this.filteredEmployees.set(results);
+        this.filteredEmployees.set([...results]);
         this.isSearchingEmployees.set(false);
       },
       error: () => {
@@ -204,8 +204,12 @@ export class RequestFormComponent {
     });
   }
 
-  onEmployeeSelect(employee: Employee): void {
-    if (!employee) return;
+  onEmployeeSelect(event: AutoCompleteSelectEvent | Employee): void {
+    const employee: Employee =
+      event && typeof event === 'object' && 'value' in event
+        ? (event.value as Employee)
+        : (event as Employee);
+    if (!employee || !employee.id) return;
     this.selectedEmployee.set(employee);
     this.requestForm.controls.employeeId.setValue(employee.id);
     this.selectedDepartmentName.set(
